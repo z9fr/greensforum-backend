@@ -21,10 +21,24 @@ func (h *Handler) SetupRotues() {
 	h.Router = chi.NewRouter()
 	h.Router.Use(middleware.Logger)
 
-	apiRouter := chi.NewRouter()
-	apiRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World!"))
+	h.Router.Route("/api/v1", func(r chi.Router) {
+		r.Get("/", ListArticles)
+		r.Get("/test", TestRoute)
+
+		r.Route("/sub", func(r chi.Router) {
+			r.Get("/", ListArticles)
+			r.Get("/subtest", TestRoute)
+		})
 	})
 
-	h.Router.Mount("/api/v1", apiRouter)
+}
+
+func ListArticles(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("articles"))
+	return
+}
+
+func TestRoute(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("test"))
+	return
 }
