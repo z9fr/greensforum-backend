@@ -1,7 +1,12 @@
 package server
 
 import (
+	"net/http"
+
 	log "github.com/sirupsen/logrus"
+	"github.com/z9fr/greensforum-backend/internal/database"
+
+	transportHttp "github.com/z9fr/greensforum-backend/internal/transport/http"
 )
 
 type App struct {
@@ -16,6 +21,18 @@ func (app *App) Run() error {
 			"AppName":    app.Name,
 			"AppVersion": app.Version,
 		}).Info("Setting up Application")
+
+	_, err := database.NewDatabase()
+	if err != nil {
+		return err
+	}
+
+	handler := transportHttp.NewHandler()
+	handler.SetupRotues()
+
+	if err := http.ListenAndServe(":4000", handler.Router); err != nil {
+		return err
+	}
 
 	return nil
 }
