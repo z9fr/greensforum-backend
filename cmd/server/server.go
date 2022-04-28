@@ -22,8 +22,12 @@ func (app *App) Run() error {
 			"AppVersion": app.Version,
 		}).Info("Setting up Application")
 
-	_, err := database.NewDatabase()
+	db, err := database.NewDatabase()
 	if err != nil {
+		return err
+	}
+
+	if err := database.MigrateDB(db); err != nil {
 		return err
 	}
 
