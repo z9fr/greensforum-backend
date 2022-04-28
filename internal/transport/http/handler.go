@@ -6,25 +6,43 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
 type Handler struct {
 	// service and router
-	Router      *chi.Mux
-	UserService *user.Service
+	Router          *chi.Mux
+	UserService     *user.Service
+	QuestionService *question.Service
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
-func NewHandler(userService *user.Service) *Handler {
+func NewHandler(userService *user.Service, questionService *question.Service) *Handler {
 	return &Handler{
-		UserService: userService,
+		UserService:     userService,
+		QuestionService: questionService,
 	}
 }
 
 func (h *Handler) SetupRotues() {
 	h.Router = chi.NewRouter()
+
+	// logs the start and end of each request, along with some useful data about what was requested,
+	// what the response status was, and how long it took to return. When standard output is a TTY,
+	// Logger will print in color, otherwise it will print in black and white. Logger prints a request ID if one is provided.
 	h.Router.Use(middleware.Logger)
+
+	// clean out double slash mistakes from a user's request path.
+	// For example, if a user requests /users//1 or //users////1 will both be treated as: /users/1
+	h.Router.Use(middleware.CleanPath)
+
+	// automatically route undefined HEAD requests to GET handlers.
+	h.Router.Use(middleware.GetHead)
+
+	// recovers from panics, logs the panic (and a backtrace),
+	// returns a HTTP 500 (Internal Server Error) status if possible. Recoverer prints a request ID if one is provided.
+	h.Router.Use(middleware.Recoverer)
 
 	h.Router.Route("/api/v1", func(r chi.Router) {
 		r.Get("/", ListArticles)
@@ -33,6 +51,17 @@ func (h *Handler) SetupRotues() {
 			r.Post("/join", h.CreateUser)
 			r.Post("/login", h.Login)
 			r.Get("/all", h.GetAllUsers)
+		})
+
+		r.Route("/view", func(r chi.Router) {
+			r.Get("/posts", h.GetAllPosts)
+			r.Get("/search", h.SearchPost)
+			r.Get("/posts/{tag}", h.FindPostsByTag)
+		})
+
+		r.Route("/post", func(r chi.Router) {
+			r.Use(h.JWTMiddlewhare)
+			r.Post("/create", h.CreatePost)
 		})
 
 		r.Route("/", func(r chi.Router) {
