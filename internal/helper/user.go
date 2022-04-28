@@ -19,7 +19,7 @@ func RequestToUserWithValidations(req user.CreateUserRequest) (user.User, error)
 	if !utils.IsEmailValid(req.Email) {
 		return user.User{}, fmt.Errorf("Invalid Email")
 	}
-
+	req.Account.ProfileImage = utils.GenerateGavatarUrl(req.Email)
 	hashedPassword, err := utils.HashPassword(req.Password)
 
 	if err != nil {
