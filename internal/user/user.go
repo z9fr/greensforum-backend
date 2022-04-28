@@ -18,9 +18,10 @@ User Types
 
 type User struct {
 	ID       uint64
-	Username string  `gorm:"column:username" json:"username"`
-	Email    string  `gorm:"column:email" json:"email"`
-	Password string  `gorm:"column:password" json:"-"`
+	Username string `gorm:"column:username" json:"username"`
+	Email    string `gorm:"column:email" json:"email"`
+	Password string `gorm:"column:password" json:"password"`
+	// Password string  `gorm:"column:password" json:"-"`
 	UserType int     `gorm:"column:user_type default:0" json:"user_type"`
 	UserAcc  Account `json:"account" gorm:"foreignKey:user_id;id"`
 }

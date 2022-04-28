@@ -17,7 +17,12 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := helper.RequestToUserWithValidations(user)
+	u, validationerror := helper.RequestToUserWithValidations(user)
+	if validationerror != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(validationerror.Error()))
+		return
+	}
 	createdUser, err := h.UserService.CreateUser(u)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
