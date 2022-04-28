@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/z9fr/greensforum-backend/internal/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func NewDatabase() (*gorm.DB, error) {
-	log.Info("Setting up Database Connection")
+	utils.LogInfo("Setting up Database Connection")
 
 	dbUsername := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
@@ -19,7 +19,7 @@ func NewDatabase() (*gorm.DB, error) {
 	dbPort := os.Getenv("DB_PORT")
 
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", dbHost, dbPort, dbUsername, dbTable, dbPassword)
-	log.Info(connectionString)
+	utils.LogInfo(connectionString)
 
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 

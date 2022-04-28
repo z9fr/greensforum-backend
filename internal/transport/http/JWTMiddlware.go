@@ -23,6 +23,7 @@ func (h *Handler) JWTMiddlewhare(next http.Handler) http.Handler {
 		user, err := utils.VerifyToken(authToken)
 
 		if err != nil {
+			LogWarningsWithRequestInfo(r, err)
 			h.sendErrorResponse(w, "Unable to Verify JWT Token", err, 401)
 			return
 		}
