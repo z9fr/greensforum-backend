@@ -54,6 +54,7 @@ type QuestionService interface {
 	CreateNewQuestion(question Question) (Question, error)
 	GetAllPosts() []Question
 	SearchQuestionsByTags(tag string) []Question
+	SearchPosts(q string) []Question
 }
 
 // NewService - create a instance of this service and return
@@ -81,6 +82,12 @@ func (s *Service) GetAllPosts() []Question {
 	var questions []Question
 	s.DB.Debug().Preload("Tags").Find(&questions)
 
+	return questions
+}
+
+func (s *Service) SearchPosts(q string) []Question {
+	var questions []Question
+	s.DB.Debug().Where("title LIKE ?", "%"+q+"%").Preload("Tags").Find(&questions)
 	return questions
 }
 
@@ -119,7 +126,12 @@ func (s *Service) SearchQuestionsByTags(tag string) []Question {
 	//	  2 | New Test 2 | hehe | programming
 	//	(4 rows)
 
-	s.DB.Debug().Preload("Tags").Raw("select * from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
+	s.DB.Debug().Raw("select * from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
+
+	if questions == nil {
+		return []Question{}
+	}
+
 	return questions
 
 }

@@ -55,6 +55,7 @@ func (h *Handler) SetupRotues() {
 
 		r.Route("/view", func(r chi.Router) {
 			r.Get("/posts", h.GetAllPosts)
+			r.Get("/search", h.SearchPost)
 			r.Get("/posts/{tag}", h.FindPostsByTag)
 		})
 

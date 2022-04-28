@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -49,4 +50,15 @@ func (h *Handler) FindPostsByTag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 	questions := h.QuestionService.SearchQuestionsByTags(tag)
 	h.sendOkResponse(w, questions)
+}
+
+func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
+	if q == "" {
+		h.sendErrorResponse(w, "Search Parameter Missing", fmt.Errorf("search parameter `q` is missing"), 401)
+		return
+	}
+
+	results := h.QuestionService.SearchPosts(q)
+	h.sendOkResponse(w, results)
 }
