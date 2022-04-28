@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"fmt"
+
 	"github.com/z9fr/greensforum-backend/internal/user"
 	"github.com/z9fr/greensforum-backend/internal/utils"
 )
@@ -9,7 +11,14 @@ import (
 // take the user request and convert it to User Object
 // this function will do validations, password hashing
 func RequestToUserWithValidations(req user.CreateUserRequest) (user.User, error) {
-	// not implemented
+
+	if req.Username == "" || req.Email == "" || req.Password == "" || req.Account.Name == "" {
+		return user.User{}, fmt.Errorf("Missing Fields")
+	}
+
+	if !utils.IsEmailValid(req.Email) {
+		return user.User{}, fmt.Errorf("Invalid Email")
+	}
 
 	hashedPassword, err := utils.HashPassword(req.Password)
 

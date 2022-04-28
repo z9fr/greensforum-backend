@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -20,10 +22,9 @@ User Types
 
 type User struct {
 	ID       uint64
-	Username string `gorm:"column:username" json:"username"`
-	Email    string `gorm:"column:email" json:"email"`
-	Password string `gorm:"column:password" json:"password"`
-	// Password string  `gorm:"column:password" json:"-"`
+	Username string  `gorm:"column:username" json:"username"`
+	Email    string  `gorm:"column:email" json:"email"`
+	Password string  `gorm:"column:password" json:"-"`
 	UserType int     `gorm:"column:user_type default:0" json:"user_type"`
 	UserAcc  Account `json:"account" gorm:"foreignKey:user_id;id"`
 }
@@ -37,7 +38,6 @@ type Account struct {
 	DisplayName  string `gorm:"column:display_name" json:"display_name"`
 	Description  string `gorm:"column:description" json:"description"`
 	Name         string `gorm:"column:name" json:"name"`
-	Slug         string `gorm:"column:slug" json:"slug"`
 	IsEmployee   bool   `gorm:"column:is_employee default:false" json:"is_employee"`
 	Reputation   int    `gorm:"column:reputation default:0" json:"reputation"`
 }
@@ -72,11 +72,16 @@ func NewService(db *gorm.DB) *Service {
 }
 
 func (s *Service) CreateUser(user User) (User, error) {
-	if result := s.DB.Save(&user); result.Error != nil {
-		return User{}, result.Error
+
+	if s.IsEmailExists(user.Email) {
+		return User{}, fmt.Errorf("Email is Already Taken")
 	}
 
-	if result := s.DB.Save(&user.UserAcc); result.Error != nil {
+	if s.IsUserNameExists(user.Username) {
+		return User{}, fmt.Errorf("Email is Already Taken")
+	}
+
+	if result := s.DB.Debug().Save(&user); result.Error != nil {
 		return User{}, result.Error
 	}
 
