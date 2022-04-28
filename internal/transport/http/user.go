@@ -14,17 +14,20 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user user.CreateUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "unable to decode json body", err, 500)
 		return
 	}
 
 	u, validationerror := helper.RequestToUserWithValidations(user)
 	if validationerror != nil {
+		LogWarningsWithRequestInfo(r, validationerror)
 		h.sendErrorResponse(w, "Validation Error Occured", validationerror, 500)
 		return
 	}
 	createdUser, err := h.UserService.CreateUser(u)
 	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "Unable to create a user please try again", err, 500)
 		return
 	}
@@ -48,12 +51,14 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var loginreq types.Login
 
 	if err := json.NewDecoder(r.Body).Decode(&loginreq); err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "unable to decode json body", err, 500)
 		return
 	}
 
 	user, err := h.UserService.GetUserByEmail(loginreq.Email)
 	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "Unable to find user with that email", err, 500)
 		return
 	}
@@ -61,6 +66,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	jwt, expretime, err := utils.GenerateJWT(user)
 
 	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "Unable to generate a JWT token", err, 500)
 	}
 

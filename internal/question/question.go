@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	models "github.com/z9fr/greensforum-backend/internal/types"
+	utils "github.com/z9fr/greensforum-backend/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -72,6 +73,7 @@ func (s *Service) CreateNewQuestion(question Question) (Question, error) {
 	}
 
 	if result := s.DB.Debug().Save(&question); result.Error != nil {
+		utils.LogWarn(result.Error)
 		return Question{}, result.Error
 	}
 

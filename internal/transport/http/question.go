@@ -17,6 +17,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	u = r.Context().Value("user").(user.User)
 
 	if err := json.NewDecoder(r.Body).Decode(&questionreq); err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "unable to decode json body", err, 500)
 		return
 	}
@@ -24,6 +25,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	question, err := helper.RequestPostWithValidation(questionreq, u)
 
 	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "Post Validation Failed", err, 500)
 		return
 	}
@@ -31,6 +33,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	q, err := h.QuestionService.CreateNewQuestion(question)
 
 	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "Unable to Create a Post", err, 500)
 		return
 	}

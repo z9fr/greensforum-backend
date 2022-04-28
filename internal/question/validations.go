@@ -1,6 +1,8 @@
 package question
 
-import "fmt"
+import (
+	"github.com/z9fr/greensforum-backend/internal/utils"
+)
 
 func (s *Service) IsTitleExist(title string) bool {
 	var exists bool
@@ -9,7 +11,7 @@ func (s *Service) IsTitleExist(title string) bool {
 		Where("title = ?", title).
 		Find(&exists).
 		Error; err != nil {
-		fmt.Println(err)
+		utils.LogWarn(err)
 	}
 
 	return exists

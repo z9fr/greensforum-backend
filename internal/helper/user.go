@@ -17,6 +17,7 @@ func RequestToUserWithValidations(req user.CreateUserRequest) (user.User, error)
 	}
 
 	if !utils.IsEmailValid(req.Email) {
+		utils.LogWarn("Invalid Email" + req.Email + " from -> " + req.Username)
 		return user.User{}, fmt.Errorf("Invalid Email")
 	}
 	req.Account.ProfileImage = utils.GenerateGavatarUrl(req.Email)
