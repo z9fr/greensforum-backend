@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/z9fr/greensforum-backend/internal/database"
+	"github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/user"
 
 	transportHttp "github.com/z9fr/greensforum-backend/internal/transport/http"
@@ -33,8 +34,9 @@ func (app *App) Run() error {
 	}
 
 	userService := user.NewService(db)
+	questionservice := question.NewService(db)
 
-	handler := transportHttp.NewHandler(userService)
+	handler := transportHttp.NewHandler(userService, questionservice)
 	handler.SetupRotues()
 
 	if err := http.ListenAndServe(":4000", handler.Router); err != nil {

@@ -6,19 +6,22 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
 type Handler struct {
 	// service and router
-	Router      *chi.Mux
-	UserService *user.Service
+	Router          *chi.Mux
+	UserService     *user.Service
+	QuestionService *question.Service
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
-func NewHandler(userService *user.Service) *Handler {
+func NewHandler(userService *user.Service, questionService *question.Service) *Handler {
 	return &Handler{
-		UserService: userService,
+		UserService:     userService,
+		QuestionService: questionService,
 	}
 }
 
@@ -48,6 +51,16 @@ func (h *Handler) SetupRotues() {
 			r.Post("/join", h.CreateUser)
 			r.Post("/login", h.Login)
 			r.Get("/all", h.GetAllUsers)
+		})
+
+		r.Route("/view", func(r chi.Router) {
+			r.Get("/posts", h.GetAllPosts)
+			r.Get("/posts/{tag}", h.FindPostsByTag)
+		})
+
+		r.Route("/post", func(r chi.Router) {
+			r.Use(h.JWTMiddlewhare)
+			r.Post("/create", h.CreatePost)
 		})
 
 		r.Route("/", func(r chi.Router) {
