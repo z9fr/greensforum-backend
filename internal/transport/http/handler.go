@@ -28,16 +28,16 @@ func (h *Handler) SetupRotues() {
 
 	h.Router.Route("/api/v1", func(r chi.Router) {
 		r.Get("/", ListArticles)
-		r.Get("/test", TestRoute)
 
 		r.Route("/user", func(r chi.Router) {
 			r.Post("/join", h.CreateUser)
+			r.Post("/login", h.Login)
 			r.Get("/all", h.GetAllUsers)
 		})
 
-		r.Route("/sub", func(r chi.Router) {
-			r.Get("/", ListArticles)
-			r.Get("/subtest", TestRoute)
+		r.Route("/", func(r chi.Router) {
+			r.Use(h.JWTMiddlewhare)
+			r.Get("/test", h.TestRoute)
 		})
 
 	})
@@ -49,11 +49,14 @@ func (h *Handler) SetupRotues() {
 }
 
 func ListArticles(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("articles"))
+	w.Write([]byte("list articles"))
 	return
 }
 
-func TestRoute(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("test"))
+func (h *Handler) TestRoute(w http.ResponseWriter, r *http.Request) {
+	var u user.User
+	u = r.Context().Value("user").(user.User)
+	h.sendOkResponse(w, u.Email)
 	return
+
 }

@@ -9,3 +9,13 @@ type Model struct {
 	UpdatedAt time.Time  `gorm:"column:updated_at" json:"updated_at"`
 	DeletedAt *time.Time `gorm:"column:deleted_at" json:"deleted_at"`
 }
+
+type Login struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Details string `json:"details"`
+}
