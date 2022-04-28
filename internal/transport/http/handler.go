@@ -29,10 +29,15 @@ func (h *Handler) SetupRotues() {
 		r.Get("/", ListArticles)
 		r.Get("/test", TestRoute)
 
+		r.Route("/user", func(r chi.Router) {
+			r.Post("/join", h.CreateUser)
+		})
+
 		r.Route("/sub", func(r chi.Router) {
 			r.Get("/", ListArticles)
 			r.Get("/subtest", TestRoute)
 		})
+
 	})
 
 }
