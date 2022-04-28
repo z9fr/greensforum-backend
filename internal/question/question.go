@@ -105,22 +105,19 @@ func (s *Service) SearchQuestionsByTags(tag string) []Question {
 	//	s.DB.Debug().Preload("Tags").Raw("SELECT * FROM questions WHERE id IN
 	//(SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
 
-	/*
+	// this do return the correct values but gorm relationship wont work soo gonna ignore for now
 
-				    this do return the correct values but gorm relationship wont work soo gonna ignore for now
+	// postgres=# select questions.id, questions.title, questions.body ,tags.name  from questions inner join question_tags
+	// ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN
+	// (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= 'tag'))
 
-						postgres=# select questions.id, questions.title, questions.body ,tags.name  from questions inner join question_tags
-		                ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN
-		                (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= 'tag'))
-						;
-						 id |   title    | body |    name
-						----+------------+------+-------------
-						  1 | test       | hehe | tag
-						  1 | test       | hehe | programming
-						  2 | New Test 2 | hehe | tag
-						  2 | New Test 2 | hehe | programming
-						(4 rows)
-	*/
+	//	 id |   title    | body |    name
+	//	----+------------+------+-------------
+	//	  1 | test       | hehe | tag
+	//	  1 | test       | hehe | programming
+	//	  2 | New Test 2 | hehe | tag
+	//	  2 | New Test 2 | hehe | programming
+	//	(4 rows)
 
 	s.DB.Debug().Preload("Tags").Raw("select * from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
 	return questions
