@@ -24,7 +24,22 @@ func NewHandler(userService *user.Service) *Handler {
 
 func (h *Handler) SetupRotues() {
 	h.Router = chi.NewRouter()
+
+	// logs the start and end of each request, along with some useful data about what was requested,
+	// what the response status was, and how long it took to return. When standard output is a TTY,
+	// Logger will print in color, otherwise it will print in black and white. Logger prints a request ID if one is provided.
 	h.Router.Use(middleware.Logger)
+
+	// clean out double slash mistakes from a user's request path.
+	// For example, if a user requests /users//1 or //users////1 will both be treated as: /users/1
+	h.Router.Use(middleware.CleanPath)
+
+	// automatically route undefined HEAD requests to GET handlers.
+	h.Router.Use(middleware.GetHead)
+
+	// recovers from panics, logs the panic (and a backtrace),
+	// returns a HTTP 500 (Internal Server Error) status if possible. Recoverer prints a request ID if one is provided.
+	h.Router.Use(middleware.Recoverer)
 
 	h.Router.Route("/api/v1", func(r chi.Router) {
 		r.Get("/", ListArticles)
