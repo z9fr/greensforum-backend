@@ -36,6 +36,11 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// Fetch All Users
+// @Summary Get All Users
+// @Produce json
+// @success 200
+// @Router  /users/all [get]
 func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users := h.UserService.FetchallUsers()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
