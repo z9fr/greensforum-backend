@@ -32,6 +32,7 @@ func (h *Handler) SetupRotues() {
 
 		r.Route("/user", func(r chi.Router) {
 			r.Post("/join", h.CreateUser)
+			r.Post("/login", h.Login)
 			r.Get("/all", h.GetAllUsers)
 		})
 
