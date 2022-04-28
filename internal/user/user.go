@@ -12,7 +12,7 @@ type User struct {
 	Email    string  `gorm:"column:email" json:"email"`
 	Password string  `gorm:"column:password" json:"password"`
 	UserType string  `json:"user_type"`
-	UserAcc  Account `gorm:"references:AccountID"`
+	UserAcc  Account `json:"user_acc" gorm:"foreignKey:user_id;id"`
 }
 
 type Account struct {
