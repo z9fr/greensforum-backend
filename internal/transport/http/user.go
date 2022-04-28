@@ -35,3 +35,10 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(createdUser)
 	return
 }
+
+func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users := h.UserService.FetchallUsers()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(users)
+}

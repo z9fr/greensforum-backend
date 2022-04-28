@@ -31,6 +31,7 @@ func (h *Handler) SetupRotues() {
 
 		r.Route("/user", func(r chi.Router) {
 			r.Post("/join", h.CreateUser)
+			r.Get("/all", h.GetAllUsers)
 		})
 
 		r.Route("/sub", func(r chi.Router) {

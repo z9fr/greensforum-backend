@@ -1,6 +1,8 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Interests struct {
 	Tags []string `json:"tags"`
@@ -60,6 +62,7 @@ type Service struct {
 
 type UserService interface {
 	CreateUser(user User) (User, error)
+	FetchallUsers() []User
 }
 
 func NewService(db *gorm.DB) *Service {
@@ -69,6 +72,19 @@ func NewService(db *gorm.DB) *Service {
 }
 
 func (s *Service) CreateUser(user User) (User, error) {
+	if result := s.DB.Save(&user); result.Error != nil {
+		return User{}, result.Error
+	}
+
+	if result := s.DB.Save(&user.UserAcc); result.Error != nil {
+		return User{}, result.Error
+	}
 
 	return user, nil
+}
+
+func (s *Service) FetchallUsers() []User {
+	var users []User
+	s.DB.Debug().Preload("UserAcc").Find(&users)
+	return users
 }
