@@ -44,7 +44,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 //@TODO
 // Add pagination
 func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
-	questions := h.QuestionService.GetAllPosts()
+	questions := h.QuestionService.GetAllQuestions()
 	h.sendOkResponse(w, questions)
 	return
 }
@@ -62,7 +62,7 @@ func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	results := h.QuestionService.SearchPosts(q)
+	results := h.QuestionService.SearchQuestions(q)
 	h.sendOkResponse(w, results)
 }
 

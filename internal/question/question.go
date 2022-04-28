@@ -58,10 +58,10 @@ type AnswerRequest struct {
 // QuestionService - interface for Question Service
 type QuestionService interface {
 	CreateNewQuestion(question Question) (Question, error)
-	GetAllPosts() []Question
-	SearchQuestionsByTags(tag string) []Question
-	SearchPosts(q string) []Question
+	GetAllQuestions() []Question
 	CreateAnswer(answer Answer, question_id string) (Question, error)
+	SearchQuestions(q string) []Question
+	SearchQuestionsByTags(tag string) []Question
 
 	//utils
 	GetQuestionByID(id string) Question
@@ -75,6 +75,7 @@ func NewService(db *gorm.DB) *Service {
 	}
 }
 
+// CreateNewQuestion - Create a new question
 func (s *Service) CreateNewQuestion(question Question) (Question, error) {
 
 	if s.IsTitleExist(question.Title) {
@@ -89,36 +90,24 @@ func (s *Service) CreateNewQuestion(question Question) (Question, error) {
 	return question, nil
 }
 
-func (s *Service) GetAllPosts() []Question {
+// GetAllQuestions - get all posts
+// and return a []Questions
+func (s *Service) GetAllQuestions() []Question {
 	var questions []Question
 	s.DB.Debug().Preload("Tags").Preload("Answers").Find(&questions)
 
 	return questions
 }
 
-func (s *Service) SearchPosts(q string) []Question {
+// SearchQuestions - search posts on the database
+// and return a Array of questions []Question
+func (s *Service) SearchQuestions(q string) []Question {
 	var questions []Question
 	s.DB.Debug().Where("title LIKE ?", "%"+q+"%").Preload("Tags").Preload("Answers").Find(&questions)
 	return questions
 }
 
-func (s *Service) CreateAnswer(answer Answer, question_id string) (Question, error) {
-
-	if !s.IsQuestionExist(question_id) {
-		return Question{}, errors.New("Question not found")
-	}
-
-	question := s.GetQuestionByID(question_id)
-	question.Answers = append(question.Answers, answer)
-	question.AnswerCount++
-	question.IsAnswered = true
-
-	s.DB.Debug().Save(&question)
-
-	return question, nil
-
-}
-
+// GetQuestionByID - get question by id and return the question
 func (s *Service) GetQuestionByID(id string) Question {
 	var question Question
 	s.DB.Debug().Preload("Tags").Preload("Answers").First(&question).Where("id = ?", id)
@@ -126,6 +115,8 @@ func (s *Service) GetQuestionByID(id string) Question {
 	return question
 }
 
+// SearchQuestionsByTags - search questions by Tag
+// and returna Array of []Questions
 func (s *Service) SearchQuestionsByTags(tag string) []Question {
 	var questions []Question
 
@@ -168,5 +159,24 @@ func (s *Service) SearchQuestionsByTags(tag string) []Question {
 	}
 
 	return questions
+
+}
+
+// @UTILS
+// CreateAnswer - write a new answer to a question
+func (s *Service) CreateAnswer(answer Answer, question_id string) (Question, error) {
+
+	if !s.IsQuestionExist(question_id) {
+		return Question{}, errors.New("Question not found")
+	}
+
+	question := s.GetQuestionByID(question_id)
+	question.Answers = append(question.Answers, answer)
+	question.AnswerCount++
+	question.IsAnswered = true
+
+	s.DB.Debug().Save(&question)
+
+	return question, nil
 
 }
