@@ -15,4 +15,18 @@ func (s *Service) IsTitleExist(title string) bool {
 	}
 
 	return exists
+
+}
+
+func (s *Service) IsQuestionExist(id string) bool {
+	var exists bool
+	if err := s.DB.Debug().Model(&Question{}).
+		Select("count(*) > 0").
+		Where("id = ?", id).
+		Find(&exists).
+		Error; err != nil {
+		utils.LogWarn(err)
+	}
+
+	return exists
 }

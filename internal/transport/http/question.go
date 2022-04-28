@@ -65,3 +65,29 @@ func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	results := h.QuestionService.SearchPosts(q)
 	h.sendOkResponse(w, results)
 }
+
+func (h *Handler) WriteAnswer(w http.ResponseWriter, r *http.Request) {
+	var reqanswer question.AnswerRequest
+	question_id := chi.URLParam(r, "qid")
+
+	var u user.User
+	u = r.Context().Value("user").(user.User)
+
+	if err := json.NewDecoder(r.Body).Decode(&reqanswer); err != nil {
+		LogWarningsWithRequestInfo(r, err)
+		h.sendErrorResponse(w, "unable to decode json body", err, 500)
+		return
+	}
+
+	// validate the request
+	question, err := helper.RequstAnswerValidation(reqanswer, u, question_id)
+	q, err := h.QuestionService.CreateAnswer(question, question_id)
+
+	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
+		h.sendErrorResponse(w, "Unable to Create a Post", err, 500)
+		return
+	}
+
+	h.sendOkResponse(w, q)
+}

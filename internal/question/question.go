@@ -50,12 +50,21 @@ type QuestionCreateRequest struct {
 	Tags  []Tag  `json:"tags"`
 }
 
+type AnswerRequest struct {
+	Title string `gorm:"column:title" json:"title"`
+	Body  string `gorm:"column:body" json:"body"`
+}
+
 // QuestionService - interface for Question Service
 type QuestionService interface {
 	CreateNewQuestion(question Question) (Question, error)
 	GetAllPosts() []Question
 	SearchQuestionsByTags(tag string) []Question
 	SearchPosts(q string) []Question
+	CreateAnswer(answer Answer, question_id string) (Question, error)
+
+	//utils
+	GetQuestionByID(id string) Question
 }
 
 // NewService - create a instance of this service and return
@@ -82,15 +91,39 @@ func (s *Service) CreateNewQuestion(question Question) (Question, error) {
 
 func (s *Service) GetAllPosts() []Question {
 	var questions []Question
-	s.DB.Debug().Preload("Tags").Find(&questions)
+	s.DB.Debug().Preload("Tags").Preload("Answers").Find(&questions)
 
 	return questions
 }
 
 func (s *Service) SearchPosts(q string) []Question {
 	var questions []Question
-	s.DB.Debug().Where("title LIKE ?", "%"+q+"%").Preload("Tags").Find(&questions)
+	s.DB.Debug().Where("title LIKE ?", "%"+q+"%").Preload("Tags").Preload("Answers").Find(&questions)
 	return questions
+}
+
+func (s *Service) CreateAnswer(answer Answer, question_id string) (Question, error) {
+
+	if !s.IsQuestionExist(question_id) {
+		return Question{}, errors.New("Question not found")
+	}
+
+	question := s.GetQuestionByID(question_id)
+	question.Answers = append(question.Answers, answer)
+	question.AnswerCount++
+	question.IsAnswered = true
+
+	s.DB.Debug().Save(&question)
+
+	return question, nil
+
+}
+
+func (s *Service) GetQuestionByID(id string) Question {
+	var question Question
+	s.DB.Debug().Preload("Tags").Preload("Answers").First(&question).Where("id = ?", id)
+
+	return question
 }
 
 func (s *Service) SearchQuestionsByTags(tag string) []Question {
