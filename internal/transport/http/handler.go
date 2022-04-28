@@ -5,16 +5,20 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
 type Handler struct {
 	// service and router
-	Router *chi.Mux
+	Router      *chi.Mux
+	UserService *user.Service
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(userService *user.Service) *Handler {
+	return &Handler{
+		UserService: userService,
+	}
 }
 
 func (h *Handler) SetupRotues() {
@@ -25,10 +29,16 @@ func (h *Handler) SetupRotues() {
 		r.Get("/", ListArticles)
 		r.Get("/test", TestRoute)
 
+		r.Route("/user", func(r chi.Router) {
+			r.Post("/join", h.CreateUser)
+			r.Get("/all", h.GetAllUsers)
+		})
+
 		r.Route("/sub", func(r chi.Router) {
 			r.Get("/", ListArticles)
 			r.Get("/subtest", TestRoute)
 		})
+
 	})
 
 }
