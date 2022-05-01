@@ -8,6 +8,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	pageSize = 10
+)
+
 type Service struct {
 	DB *gorm.DB
 }
@@ -55,6 +59,11 @@ type AnswerRequest struct {
 	Body  string `gorm:"column:body" json:"body"`
 }
 
+type PaginatedQuestions struct {
+	Items []Question `json:"items"`
+	Next  int        `json:"next_page_id"`
+}
+
 // QuestionService - interface for Question Service
 type QuestionService interface {
 	CreateNewQuestion(question Question) (Question, error)
@@ -62,6 +71,9 @@ type QuestionService interface {
 	SearchQuestionsByTags(tag string) []Question
 	SearchPosts(q string) []Question
 	CreateAnswer(answer Answer, question_id string) (Question, error)
+
+	// pagination
+	GetQuestionsPaginate(pageID int) []Question
 
 	//utils
 	GetQuestionByID(id string) Question
@@ -124,6 +136,22 @@ func (s *Service) GetQuestionByID(id string) Question {
 	s.DB.Debug().Preload("Tags").Preload("Answers").First(&question).Where("id = ?", id)
 
 	return question
+}
+
+// GetArticles returns all articles from the database
+func (s *Service) GetQuestionsPaginate(pageID int) PaginatedQuestions {
+	var response PaginatedQuestions
+	var questions []Question
+	s.DB.Where("id >= ? ", pageID).Order("id").Limit(pageSize + 1).Find(&questions)
+
+	if len(questions) == pageSize+1 {
+		next_id := questions[len(response.Items)-1].ID
+		uq := questions[:pageSize]
+		response.Items = append(response.Items, uq...)
+		response.Next = int(next_id)
+	}
+
+	return response
 }
 
 func (s *Service) SearchQuestionsByTags(tag string) []Question {

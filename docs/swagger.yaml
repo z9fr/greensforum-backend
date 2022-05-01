@@ -1,4 +1,82 @@
 basePath: /api/v1
+definitions:
+  question.Answer:
+    properties:
+      body:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      down_vote_count:
+        type: integer
+      id:
+        type: integer
+      question_id:
+        type: integer
+      score:
+        type: integer
+      title:
+        type: string
+      up_vote_count:
+        type: integer
+      updated_at:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  question.Question:
+    properties:
+      answer_count:
+        type: integer
+      answers:
+        items:
+          $ref: '#/definitions/question.Answer'
+        type: array
+      body:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_at:
+        type: string
+      down_vote_count:
+        type: integer
+      id:
+        type: integer
+      is_answered:
+        type: boolean
+      score:
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/question.Tag'
+        type: array
+      title:
+        description: QuestionID    int      `gorm:"column:question_id primaryKey"
+          json:"question_id"`
+        type: string
+      up_vote_count:
+        type: integer
+      updated_at:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  question.Tag:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -13,14 +91,25 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
-  /users/all:
+  /view/posts/{tag}:
     get:
+      description: GetArticle returns a single article by id
+      parameters:
+      - description: post id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: ""
-      summary: Get All Users
+          description: OK
+          schema:
+            $ref: '#/definitions/question.Question'
+      summary: Get qusestions by id
+      tags:
+      - Questions
 securityDefinitions:
   BasicAuth:
     type: basic

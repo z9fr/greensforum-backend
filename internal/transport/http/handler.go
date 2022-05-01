@@ -54,6 +54,8 @@ func (h *Handler) SetupRotues() {
 		})
 
 		r.Route("/view", func(r chi.Router) {
+			r.With(h.Pagination).Get("/p2", h.ListArticles)
+
 			r.Get("/posts", h.GetAllPosts)
 			r.Get("/search", h.SearchPost)
 			r.Get("/posts/{tag}", h.FindPostsByTag)
@@ -72,9 +74,11 @@ func (h *Handler) SetupRotues() {
 
 	})
 
-	h.Router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("/swagger/doc.json"), //The url pointing to API definition
-	))
+	h.Router.HandleFunc("/swagger", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, r.RequestURI+"/", http.StatusMovedPermanently)
+	})
+
+	h.Router.Get("/swagger*", httpSwagger.Handler())
 
 }
 
