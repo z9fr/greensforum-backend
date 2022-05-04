@@ -18,7 +18,7 @@ func (s *Service) IsTitleExist(title string) bool {
 
 }
 
-func (s *Service) IsQuestionExist(id string) bool {
+func (s *Service) IsQuestionExist(id uint) bool {
 	var exists bool
 	if err := s.DB.Debug().Model(&Question{}).
 		Select("count(*) > 0").

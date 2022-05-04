@@ -8,7 +8,7 @@ import (
 )
 
 func MigrateDB(db *gorm.DB) error {
-	if err := db.AutoMigrate(&user.User{}, &user.Account{}, &question.Question{}, &question.Answer{}, &question.Tag{}); err != nil {
+	if err := db.AutoMigrate(&user.User{}, &user.Account{}, &question.Question{}, &question.Answer{}, &question.Tag{}, &question.UpVotedBy{}); err != nil {
 		utils.LogFatal(err)
 		return err
 	}

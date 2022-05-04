@@ -1,8 +1,6 @@
 package user
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -70,41 +68,4 @@ func NewService(db *gorm.DB) *Service {
 	return &Service{
 		DB: db,
 	}
-}
-
-func (s *Service) CreateUser(user User) (User, error) {
-
-	if s.IsEmailExists(user.Email) {
-		return User{}, fmt.Errorf("Email is Already Taken")
-	}
-
-	if s.IsUserNameExists(user.Username) {
-		return User{}, fmt.Errorf("Email is Already Taken")
-	}
-
-	if result := s.DB.Debug().Save(&user); result.Error != nil {
-		return User{}, result.Error
-	}
-
-	return user, nil
-}
-
-func (s *Service) FetchallUsers() []User {
-	var users []User
-	s.DB.Debug().Preload("UserAcc").Find(&users)
-	return users
-}
-
-func (s *Service) GetUserByEmail(email string) (User, error) {
-	var user User
-
-	if !s.IsEmailExists(email) {
-		return User{}, fmt.Errorf("No user with that email")
-	}
-
-	if result := s.DB.Debug().Preload("UserAcc").First(&user, "email = ?", email); result.Error != nil {
-		return User{}, result.Error
-	}
-
-	return user, nil
 }
