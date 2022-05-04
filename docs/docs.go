@@ -64,8 +64,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/question/upvote": {
+            "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "upvote a question",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Upvote a question",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.VoteStruct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/question.Question"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/question/{qid}/answer/create": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Answer to a question",
                 "consumes": [
                     "application/json"
@@ -283,6 +330,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "http.VoteStruct": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "question.Answer": {
             "type": "object",
             "properties": {
@@ -368,6 +423,9 @@ const docTemplate = `{
                 "score": {
                     "type": "integer"
                 },
+                "slug": {
+                    "type": "string"
+                },
                 "tags": {
                     "type": "array",
                     "items": {
@@ -383,6 +441,12 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "upvotedUsers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/question.UpVotedBy"
+                    }
                 },
                 "view_count": {
                     "type": "integer"
@@ -423,6 +487,26 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "question.UpVotedBy": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "integer"
                 }
             }
         },

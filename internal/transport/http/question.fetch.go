@@ -13,6 +13,7 @@ import "net/http"
 // @Tags Question
 func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	questions := h.QuestionService.GetAllPosts()
+
 	h.sendOkResponse(w, questions)
 	return
 }

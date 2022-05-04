@@ -12,6 +12,10 @@ type VoteStruct struct {
 	ID uint `json:"id"`
 }
 
+type SuccessResultUpvote struct {
+	Success bool `json:"success"`
+}
+
 // @Summary Upvote a question
 // @Description upvote a question
 // @Accept  json
@@ -37,9 +41,13 @@ func (h *Handler) UpvotePost(w http.ResponseWriter, r *http.Request) {
 	question := h.QuestionService.GetQuestionByID(vreq.ID)
 
 	if question.Title == "" {
-		return
+		h.sendOkResponse(w, &SuccessResultUpvote{
+			Success: false,
+		})
 	}
 
 	h.QuestionService.UpVotePost(&u, &question)
-	h.sendOkResponse(w, map[string]interface{}{"success": true})
+	h.sendOkResponse(w, &SuccessResultUpvote{
+		Success: true,
+	})
 }

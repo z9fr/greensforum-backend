@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/z9fr/greensforum-backend/internal/question"
+	topwords "github.com/z9fr/greensforum-backend/internal/top-words"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
@@ -15,13 +16,15 @@ type Handler struct {
 	Router          *chi.Mux
 	UserService     *user.Service
 	QuestionService *question.Service
+	TopWordsService *topwords.ITopTenWords
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
-func NewHandler(userService *user.Service, questionService *question.Service) *Handler {
+func NewHandler(userService *user.Service, questionService *question.Service, topwordsservice *topwords.ITopTenWords) *Handler {
 	return &Handler{
 		UserService:     userService,
 		QuestionService: questionService,
+		TopWordsService: topwordsservice,
 	}
 }
 

@@ -7,6 +7,9 @@ import (
 // upvote a post
 func (s *Service) UpVotePost(user *user.User, question *Question) {
 
+	if question.Title == "" {
+		return
+	}
 	// check if user is already upvoted
 	voted := s.isUpvoted(user, question)
 	if voted {

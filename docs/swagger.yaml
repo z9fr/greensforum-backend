@@ -1,5 +1,10 @@
 basePath: /v2
 definitions:
+  http.VoteStruct:
+    properties:
+      id:
+        type: integer
+    type: object
   question.Answer:
     properties:
       body:
@@ -56,6 +61,8 @@ definitions:
         type: boolean
       score:
         type: integer
+      slug:
+        type: string
       tags:
         items:
           $ref: '#/definitions/question.Tag'
@@ -68,6 +75,10 @@ definitions:
         type: integer
       updated_at:
         type: string
+      upvotedUsers:
+        items:
+          $ref: '#/definitions/question.UpVotedBy'
+        type: array
       view_count:
         type: integer
     type: object
@@ -94,6 +105,19 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  question.UpVotedBy:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+      uuid:
+        type: integer
     type: object
   types.AuthRequest:
     properties:
@@ -209,6 +233,8 @@ paths:
             items:
               $ref: '#/definitions/question.Answer'
             type: array
+      security:
+      - JWT: []
       summary: Write Answer
       tags:
       - Answer
@@ -234,6 +260,32 @@ paths:
       security:
       - JWT: []
       summary: Create a new Question
+      tags:
+      - Question
+  /question/upvote:
+    patch:
+      consumes:
+      - application/json
+      description: upvote a question
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/http.VoteStruct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/question.Question'
+            type: array
+      security:
+      - JWT: []
+      summary: Upvote a question
       tags:
       - Question
   /user/join:
