@@ -1,6 +1,8 @@
 package question
 
-import "github.com/z9fr/greensforum-backend/internal/user"
+import (
+	"github.com/z9fr/greensforum-backend/internal/user"
+)
 
 // upvote a post
 func (s *Service) UpVotePost(user *user.User, question *Question) {
@@ -10,7 +12,6 @@ func (s *Service) UpVotePost(user *user.User, question *Question) {
 	if voted {
 		return
 	} else {
-
 		question.UpVoteCount++
 		upuser := UpVotedBy{
 			UserId: uint(user.ID),

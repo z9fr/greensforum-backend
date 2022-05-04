@@ -19,6 +19,7 @@ import (
 // @Param   qid   path  uint  true  "Question ID"
 // @Success 200 {array} question.Answer
 // @Router /question/{qid}/answer/create [POST]
+// @Security JWT
 // @Tags Answer
 func (h *Handler) WriteAnswer(w http.ResponseWriter, r *http.Request) {
 	var reqanswer question.AnswerRequest
