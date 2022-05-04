@@ -9,3 +9,12 @@ upcoming events happening at nsbm swiftly.
 
 api documentation is availible
 https://documenter.getpostman.com/view/15892759/UyrHgDdZ
+
+
+--------------------------------------------------------------------------------------------------------
+
+user types
+
+0 -> user
+1 -> mod
+2 -> admin

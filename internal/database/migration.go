@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/z9fr/greensforum-backend/internal/collective"
 	"github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/types"
 	"github.com/z9fr/greensforum-backend/internal/user"
@@ -9,7 +10,9 @@ import (
 )
 
 func MigrateDB(db *gorm.DB) error {
-	if err := db.AutoMigrate(&user.User{}, &user.Account{}, &question.Question{}, &question.Answer{}, &question.Tag{}, &question.UpVotedBy{}, &types.TopWord{}); err != nil {
+	if err := db.AutoMigrate(&user.User{}, &user.Account{},
+		&question.Question{}, &question.Answer{}, &question.Tag{},
+		&question.UpVotedBy{}, &types.TopWord{}, &collective.Collective{}); err != nil {
 		utils.LogFatal(err)
 		return err
 	}
