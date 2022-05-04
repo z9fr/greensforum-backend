@@ -27,10 +27,10 @@ type Question struct {
 	Score         int              `gorm:"column:score default:0" json:"score"`
 	CreatedBy     uint64           `gorm:"column:created_by" json:"created_by" `
 	Slug          string           `gorm:"column:slug" json:"slug"`
-	Answers       []Answer         `gorm:"foreignKey:question_id;id" json:"answers"`
 	Tags          []Tag            `gorm:"many2many:question_tags" json:"tags"`
+	Answers       []Answer         `gorm:"foreignKey:question_id;id" json:"answers"`
 	UpvotedUsers  []UpVotedBy      `gorm:"many2many:question_id;id" json:"upvotedUsers"`
-	Related       []models.TopWord `gorm:"many2many:question_id;id" json:"relatedtopics"`
+	Related       []models.TopWord `gorm:"many2many:question_related" json:"relatedtopics"`
 }
 
 type Answer struct {

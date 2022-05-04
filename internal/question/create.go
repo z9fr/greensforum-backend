@@ -48,6 +48,7 @@ func (s *Service) CreateAnswer(answer Answer, question_id uint) (Question, error
 // @TODO
 // do more validations and checking
 func (s *Service) GenerateSlug(title string) string {
+	title = utils.FirstN(title, 80)
 	title = strings.ToLower(title)
 	title = strings.ReplaceAll(title, " ", "-")
 

@@ -13,13 +13,6 @@ import "net/http"
 // @Tags Question
 func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	questions := h.QuestionService.GetAllQuestions()
-
-	for _, question := range questions {
-		defer h.TopWordsService.Reset()
-		question.Related = append(question.Related, h.TopWordsService.TopTenWords(question.Title)...)
-		// question.RelatedTopics = append(question.RelatedTopics, string(h.TopWordsService.TopTenWords(question.Body)))
-	}
-
 	h.sendOkResponse(w, questions)
 	return
 }
