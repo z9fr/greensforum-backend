@@ -75,10 +75,10 @@ type PaginatedQuestions struct {
 // QuestionService - interface for Question Service
 type QuestionService interface {
 	CreateNewQuestion(question Question) (Question, error)
-	GetAllPosts() []Question
-	SearchQuestionsByTags(tag string) []Question
-	SearchPosts(q string) []Question
+	GetAllQuestions() []Question
 	CreateAnswer(answer Answer, question_id string) (Question, error)
+	SearchQuestions(q string) []Question
+	SearchQuestionsByTags(tag string) []Question
 
 	// pagination
 	GetQuestionsPaginate(pageID int) []Question
