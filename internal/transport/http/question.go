@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/z9fr/greensforum-backend/internal/helper"
@@ -77,7 +78,8 @@ func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 // @Tags Question
 func (h *Handler) FindPostsByTag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
-	questions := h.QuestionService.SearchQuestionsByTags(tag)
+	//questions := h.QuestionService.SearchQuestionsByTags(tag)
+	questions := h.QuestionService.SearchQuestionsByTagsv2(tag)
 	h.sendOkResponse(w, questions)
 }
 
@@ -105,7 +107,7 @@ func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Param payload body question.AnswerRequest true "payload"
-// @Param   qid   path  int  true  "Question ID"
+// @Param   qid   path  uint  true  "Question ID"
 // @Success 200 {array} question.Answer
 // @Router /question/{qid}/answer/create [POST]
 // @Tags Answer
@@ -124,7 +126,17 @@ func (h *Handler) WriteAnswer(w http.ResponseWriter, r *http.Request) {
 
 	// validate the request
 	question, err := helper.RequstAnswerValidation(reqanswer, u, question_id)
-	q, err := h.QuestionService.CreateAnswer(question, question_id)
+
+	// check if question_id is actually a int
+	qid, err := strconv.ParseUint(question_id, 10, 32)
+
+	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
+		h.sendErrorResponse(w, "unable to decode json body", err, 500)
+		return
+	}
+
+	q, err := h.QuestionService.CreateAnswer(question, uint(qid))
 
 	if err != nil {
 		LogWarningsWithRequestInfo(r, err)

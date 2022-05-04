@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	models "github.com/z9fr/greensforum-backend/internal/types"
+	"github.com/z9fr/greensforum-backend/internal/user"
 	utils "github.com/z9fr/greensforum-backend/internal/utils"
 	"gorm.io/gorm"
 )
@@ -30,6 +31,8 @@ type Question struct {
 	Answers       []Answer `gorm:"foreignKey:question_id;id" json:"answers"`
 	Tags          []Tag    `gorm:"many2many:question_tags" json:"tags"`
 	CreatedBy     uint64   `gorm:"column:created_by" json:"created_by" `
+	Slug          string   `gorm:"column:slug" json:"slug"`
+	// UpvotedUsers  []UpVotedBy `gorm:"foreignKey:question_id;id" json:"upvotedUsers"`
 }
 
 type Answer struct {
@@ -46,6 +49,10 @@ type Answer struct {
 type Tag struct {
 	models.Model
 	Name string `json:"name"`
+}
+
+type UpVotedBy struct {
+	UserId int `json:"upvoted"`
 }
 
 type QuestionCreateRequest struct {
@@ -76,7 +83,8 @@ type QuestionService interface {
 	GetQuestionsPaginate(pageID int) []Question
 
 	//utils
-	GetQuestionByID(id string) Question
+	GetQuestionByID(id uint) Question
+	UpdateQuestionViews(id uint)
 }
 
 // NewService - create a instance of this service and return
@@ -87,6 +95,7 @@ func NewService(db *gorm.DB) *Service {
 	}
 }
 
+// create a new question
 func (s *Service) CreateNewQuestion(question Question) (Question, error) {
 
 	if s.IsTitleExist(question.Title) {
@@ -101,6 +110,7 @@ func (s *Service) CreateNewQuestion(question Question) (Question, error) {
 	return question, nil
 }
 
+// fetch all posts avaible
 func (s *Service) GetAllPosts() []Question {
 	var questions []Question
 	s.DB.Debug().Preload("Tags").Preload("Answers").Find(&questions)
@@ -108,13 +118,20 @@ func (s *Service) GetAllPosts() []Question {
 	return questions
 }
 
+// seach for a post based on a keyword
 func (s *Service) SearchPosts(q string) []Question {
 	var questions []Question
 	s.DB.Debug().Where("title LIKE ?", "%"+q+"%").Preload("Tags").Preload("Answers").Find(&questions)
 	return questions
 }
 
-func (s *Service) CreateAnswer(answer Answer, question_id string) (Question, error) {
+// upvote a post
+
+func (s *Service) UpVotePost(user user.User, question Question) {
+
+}
+
+func (s *Service) CreateAnswer(answer Answer, question_id uint) (Question, error) {
 
 	if !s.IsQuestionExist(question_id) {
 		return Question{}, errors.New("Question not found")
@@ -131,7 +148,7 @@ func (s *Service) CreateAnswer(answer Answer, question_id string) (Question, err
 
 }
 
-func (s *Service) GetQuestionByID(id string) Question {
+func (s *Service) GetQuestionByID(id uint) Question {
 	var question Question
 	s.DB.Debug().Preload("Tags").Preload("Answers").First(&question).Where("id = ?", id)
 
@@ -154,47 +171,88 @@ func (s *Service) GetQuestionsPaginate(pageID int) PaginatedQuestions {
 	return response
 }
 
+// get questions based on a tag
+// @depriciated
 func (s *Service) SearchQuestionsByTags(tag string) []Question {
 	var questions []Question
+	var questions_with_tags []Question
 
-	// finally get questions
-	// SELECT * FROM questions WHERE id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= 'tag'));
+	// s.DB.Debug().Raw("select * from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
+	s.DB.Debug().Raw("select * from questions where id in (select question_id from question_tags where tag_id in (select id from tags where name= ?))", tag).Scan(&questions)
 
-	// this won't retun relationsips
-
-	// Get question title and tag id
-	// select questions.title, question_tags.tag_id  from questions inner join question_tags ON id=question_id;
-
-	// combine these two tables
-	// select questions.title, tags.name from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id;
-
-	// and final query
-	// select questions.title, tags.name from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id
-	// where questions.id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= 'tag'));
-
-	//	s.DB.Debug().Preload("Tags").Raw("SELECT * FROM questions WHERE id IN
-	//(SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
-
-	// this do return the correct values but gorm relationship wont work soo gonna ignore for now
-
-	// postgres=# select questions.id, questions.title, questions.body ,tags.name  from questions inner join question_tags
-	// ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN
-	// (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= 'tag'))
-
-	//	 id |   title    | body |    name
-	//	----+------------+------+-------------
-	//	  1 | test       | hehe | tag
-	//	  1 | test       | hehe | programming
-	//	  2 | New Test 2 | hehe | tag
-	//	  2 | New Test 2 | hehe | programming
-	//	(4 rows)
-
-	s.DB.Debug().Raw("select * from questions inner join question_tags ON id=question_id inner join tags on question_tags.tag_id=tags.id where questions.id IN (SELECT question_id FROM question_tags WHERE tag_id IN (SELECT id FROM tags WHERE name= ?))", tag).Scan(&questions)
+	for _, question := range questions {
+		q := s.GetQuestionByID(question.ID)
+		questions_with_tags = append(questions_with_tags, q)
+	}
 
 	if questions == nil {
 		return []Question{}
 	}
 
-	return questions
+	return questions_with_tags
 
+}
+
+// get questions based on a tag
+// @updates this is mostly a performance update
+// someone from discord helped me to figure this out
+
+/*
+at first .Scan(dest interface{}) works like this .Scan(&struct.Field1, &struct.Field2)
+Where in every field with their respective tags for the database counterparty, it automatically maps it to their location.
+the reason why i switched to pointer type is that I can get their memory address
+once they are parsed 1 by 1
+or scanned*
+that way on this snippet:
+
+```go
+for _, question := range questions {
+        var tags []Tags
+        s.DB.Debug().Raw("select * from tags where id IN (select tag_id from question_tags where question_id = ?)", question.Question_ID).Scan(&tags)
+        question.Tags = tags
+    }
+```
+
+I don't need to create a new variable to store questions with tags,
+in which question in this case is *Question and I can directly modify it since it is already a pointer.
+that's why I directly inserted to question.Tags = tags
+yes and everytime you .Scan(&dest) it automatically populates the fields
+
+take note that there is a difference between *[]Question and []*Question
+
+```go
+var questions *[]Question
+
+// questions is nil by default
+// whereas
+
+var questions []*Question
+
+// `questions` is a zero-empty array by default
+```
+
+*/
+
+func (s *Service) SearchQuestionsByTagsv2(tag string) []*Question {
+	var questions []*Question
+
+	s.DB.Debug().Raw("select * from questions where id in (select question_id from question_tags where tag_id in (select id from tags where name= ?))", tag).Scan(&questions)
+
+	for _, question := range questions {
+		var tags []Tag
+		s.DB.Debug().Raw("select * from tags where id IN (select tag_id from question_tags where question_id = ?)", question.ID).Scan(&tags)
+		question.Tags = tags
+	}
+
+	if len(questions) == 0 {
+		return []*Question{}
+	}
+
+	return questions
+}
+
+// update question views
+func (s *Service) UpdateQuestionViews(question Question) {
+	question.ViewCount++
+	s.DB.Debug().Save(&question)
 }
