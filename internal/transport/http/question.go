@@ -11,7 +11,18 @@ import (
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
+// @Summary Create a new Question
+// @Description create a new question
+// @in header
+// @Accept  json
+// @Produce  json
+// @Param payload body question.QuestionCreateRequest true "payload"
+// @Success 200 {object} question.Question
+// @Router /question/create [POST]
+// @Security JWT
+// @Tags Question
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
+
 	var questionreq question.QuestionCreateRequest
 	var u user.User
 	u = r.Context().Value("user").(user.User)
@@ -41,18 +52,43 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	h.sendOkResponse(w, q)
 }
 
+// @Summary fetch all posts
+// @Description Get all the posts
+// @in header
+// @Accept  json
+// @Produce  json
+// @Param      next_post   query     int  true  "Next Post"
+// @Success 200 {array} question.Question
+// @Router /view/questions [GET]
+// @Tags Question
 func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	questions := h.QuestionService.GetAllPosts()
 	h.sendOkResponse(w, questions)
 	return
 }
 
+// @Summary get posts by tags
+// @Description find posts by using tag
+// @Accept  json
+// @Produce  json
+// @Param    tag   path      string  true  "Tag Name"
+// @Success 200 {array} question.Question
+// @Router  /view/questions/{tag} [GET]
+// @Tags Question
 func (h *Handler) FindPostsByTag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 	questions := h.QuestionService.SearchQuestionsByTags(tag)
 	h.sendOkResponse(w, questions)
 }
 
+// @Summary search for posts
+// @Description Search Posts based on a keyword
+// @Accept  json
+// @Produce  json
+// @Param   q   query     string  true  "Search Query"
+// @Success 200 {array} question.Question
+// @Router /view/search [GET]
+// @Tags Question
 func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	if q == "" {
@@ -64,6 +100,15 @@ func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	h.sendOkResponse(w, results)
 }
 
+// @Summary Write Answer
+// @Description Answer to a question
+// @Accept  json
+// @Produce  json
+// @Param payload body question.AnswerRequest true "payload"
+// @Param   qid   path  int  true  "Question ID"
+// @Success 200 {array} question.Answer
+// @Router /question/{qid}/answer/create [POST]
+// @Tags Answer
 func (h *Handler) WriteAnswer(w http.ResponseWriter, r *http.Request) {
 	var reqanswer question.AnswerRequest
 	question_id := chi.URLParam(r, "qid")
@@ -91,7 +136,6 @@ func (h *Handler) WriteAnswer(w http.ResponseWriter, r *http.Request) {
 }
 
 // =========== find posts pagination test =========================
-
 func (h *Handler) ListArticles(w http.ResponseWriter, r *http.Request) {
 	pageID := r.Context().Value(PageIDKey).(int)
 	questions := h.QuestionService.GetQuestionsPaginate(pageID)

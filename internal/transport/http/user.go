@@ -10,6 +10,14 @@ import (
 	"github.com/z9fr/greensforum-backend/internal/utils"
 )
 
+// @Summary Register
+// @Description register a new user
+// @Accept  json
+// @Produce  json
+// @Param payload body user.CreateUserRequest true "payload"
+// @Success 200 {object} user.User
+// @Router /user/join [POST]
+// @Tags User
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user user.CreateUserRequest
 
@@ -47,6 +55,15 @@ func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 // users will send a payload of email and password
 // validate the user details and generate a JWT Token
 // and send the response
+
+// @Summary Authenticate User
+// @Description login as a existing user
+// @Accept  json
+// @Produce  json
+// @Param payload body types.Login true "payload"
+// @Success 200 {object} types.AuthRequest
+// @Router /user/login [POST]
+// @Tags Authentication
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var loginreq types.Login
 

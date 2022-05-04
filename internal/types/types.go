@@ -19,3 +19,8 @@ type ErrorResponse struct {
 	Error   string `json:"error"`
 	Details string `json:"details"`
 }
+
+type AuthRequest struct {
+	Token  string `json:"token"`
+	Expire int64  `json:"expire"`
+}

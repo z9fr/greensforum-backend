@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
@@ -55,12 +56,12 @@ func (h *Handler) SetupRotues() {
 		r.Route("/view", func(r chi.Router) {
 			r.With(h.Pagination).Get("/p2", h.ListArticles)
 
-			r.Get("/posts", h.GetAllPosts)
+			r.Get("/questions", h.GetAllPosts)
 			r.Get("/search", h.SearchPost)
-			r.Get("/posts/{tag}", h.FindPostsByTag)
+			r.Get("/questions/{tag}", h.FindPostsByTag)
 		})
 
-		r.Route("/post", func(r chi.Router) {
+		r.Route("/question", func(r chi.Router) {
 			r.Use(h.JWTMiddlewhare)
 			r.Post("/create", h.CreatePost)
 			r.Post("/{qid}/answer/create", h.WriteAnswer)
@@ -72,6 +73,10 @@ func (h *Handler) SetupRotues() {
 		})
 
 	})
+
+	h.Router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"), //The url pointing to API definition
+	))
 
 }
 

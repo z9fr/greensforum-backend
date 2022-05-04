@@ -1,0 +1,357 @@
+basePath: /v2
+definitions:
+  question.Answer:
+    properties:
+      body:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      down_vote_count:
+        type: integer
+      id:
+        type: integer
+      question_id:
+        type: integer
+      score:
+        type: integer
+      title:
+        type: string
+      up_vote_count:
+        type: integer
+      updated_at:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  question.AnswerRequest:
+    properties:
+      body:
+        type: string
+      title:
+        type: string
+    type: object
+  question.Question:
+    properties:
+      answer_count:
+        type: integer
+      answers:
+        items:
+          $ref: '#/definitions/question.Answer'
+        type: array
+      body:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_at:
+        type: string
+      down_vote_count:
+        type: integer
+      id:
+        type: integer
+      is_answered:
+        type: boolean
+      score:
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/question.Tag'
+        type: array
+      title:
+        description: QuestionID    int      `gorm:"column:question_id primaryKey"
+          json:"question_id"`
+        type: string
+      up_vote_count:
+        type: integer
+      updated_at:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  question.QuestionCreateRequest:
+    properties:
+      body:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/question.Tag'
+        type: array
+      title:
+        type: string
+    type: object
+  question.Tag:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  types.AuthRequest:
+    properties:
+      expire:
+        type: integer
+      token:
+        type: string
+    type: object
+  types.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user.Account:
+    properties:
+      account_id:
+        type: integer
+      description:
+        type: string
+      display_name:
+        type: string
+      is_employee:
+        type: boolean
+      location:
+        type: string
+      name:
+        type: string
+      profile_image:
+        type: string
+      reputation:
+        type: integer
+      user_id:
+        type: integer
+      website_url:
+        type: string
+    type: object
+  user.CreateUserRequest:
+    properties:
+      account:
+        properties:
+          description:
+            type: string
+          display_name:
+            type: string
+          location:
+            type: string
+          name:
+            type: string
+          profile_image:
+            type: string
+          website_url:
+            type: string
+        type: object
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  user.User:
+    properties:
+      account:
+        $ref: '#/definitions/user.Account'
+      email:
+        type: string
+      id:
+        type: integer
+      user_type:
+        type: integer
+      username:
+        type: string
+    type: object
+host: api.staging.green.dasith.works
+info:
+  contact:
+    email: z9fr@proton.me
+    name: API support
+    url: http://greenforum.com/support
+  description: REST api documentation for green forum
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://dasith.works
+  title: Green Forum Backend
+  version: "1.0"
+paths:
+  /question/{qid}/answer/create:
+    post:
+      consumes:
+      - application/json
+      description: Answer to a question
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/question.AnswerRequest'
+      - description: Question ID
+        in: path
+        name: qid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/question.Answer'
+            type: array
+      summary: Write Answer
+      tags:
+      - Answer
+  /question/create:
+    post:
+      consumes:
+      - application/json
+      description: create a new question
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/question.QuestionCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/question.Question'
+      security:
+      - JWT: []
+      summary: Create a new Question
+      tags:
+      - Question
+  /user/join:
+    post:
+      consumes:
+      - application/json
+      description: register a new user
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+      summary: Register
+      tags:
+      - User
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: login as a existing user
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.AuthRequest'
+      summary: Authenticate User
+      tags:
+      - Authentication
+  /view/questions:
+    get:
+      consumes:
+      - application/json
+      description: Get all the posts
+      parameters:
+      - description: Next Post
+        in: query
+        name: next_post
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/question.Question'
+            type: array
+      summary: fetch all posts
+      tags:
+      - Question
+  /view/questions/{tag}:
+    get:
+      consumes:
+      - application/json
+      description: find posts by using tag
+      parameters:
+      - description: Tag Name
+        in: path
+        name: tag
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/question.Question'
+            type: array
+      summary: get posts by tags
+      tags:
+      - Question
+  /view/search:
+    get:
+      consumes:
+      - application/json
+      description: Search Posts based on a keyword
+      parameters:
+      - description: Search Query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/question.Question'
+            type: array
+      summary: search for posts
+      tags:
+      - Question
+securityDefinitions:
+  JWT:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
