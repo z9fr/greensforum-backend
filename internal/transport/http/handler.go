@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
@@ -73,12 +72,6 @@ func (h *Handler) SetupRotues() {
 		})
 
 	})
-
-	h.Router.HandleFunc("/swagger", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, r.RequestURI+"/", http.StatusMovedPermanently)
-	})
-
-	h.Router.Get("/swagger*", httpSwagger.Handler())
 
 }
 

@@ -41,23 +41,12 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	h.sendOkResponse(w, q)
 }
 
-//@TODO
-// Add pagination
-
 func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	questions := h.QuestionService.GetAllPosts()
 	h.sendOkResponse(w, questions)
 	return
 }
 
-// FindPostsByTag renders the questions from the context
-// @Summary Get qusestions by id
-// @Description GetArticle returns a single article by id
-// @Tags Questions
-// @Produce json
-// @Param id path string true "post id"
-// @Router /view/posts/{tag} [get]
-// @Success 200 {object} question.Question
 func (h *Handler) FindPostsByTag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 	questions := h.QuestionService.SearchQuestionsByTags(tag)
