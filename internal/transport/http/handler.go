@@ -65,6 +65,7 @@ func (h *Handler) SetupRotues() {
 			r.Use(h.JWTMiddlewhare)
 			r.Post("/create", h.CreatePost)
 			r.Post("/{qid}/answer/create", h.WriteAnswer)
+			// r.Patch("/upvote", h.QuestionService.UpVotePost)
 		})
 
 		r.Route("/", func(r chi.Router) {

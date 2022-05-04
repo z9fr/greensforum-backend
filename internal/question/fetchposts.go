@@ -3,7 +3,7 @@ package question
 // fetch all posts avaible
 func (s *Service) GetAllPosts() []Question {
 	var questions []Question
-	s.DB.Debug().Preload("Tags").Preload("Answers").Find(&questions)
+	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Find(&questions)
 
 	return questions
 }

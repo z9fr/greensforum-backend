@@ -2,6 +2,7 @@ package question
 
 import (
 	models "github.com/z9fr/greensforum-backend/internal/types"
+	"github.com/z9fr/greensforum-backend/internal/user"
 	"gorm.io/gorm"
 )
 
@@ -16,19 +17,19 @@ type Service struct {
 type Question struct {
 	models.Model
 	// QuestionID    int      `gorm:"column:question_id primaryKey" json:"question_id"`
-	Title         string   `gorm:"column:title" json:"title"`
-	Body          string   `gorm:"column:body" json:"body"`
-	IsAnswered    bool     `gorm:"column:is_answered default:false" json:"is_answered"`
-	ViewCount     int      `gorm:"column:view_count default:0" json:"view_count"`
-	DownVoteCount int      `gorm:"column:down_vote_count default:0" json:"down_vote_count"`
-	UpVoteCount   int      `grom:"column:up_vote_count default:0" json:"up_vote_count"`
-	AnswerCount   int      `gorm:"column:answer_count default:0" json:"answer_count"`
-	Score         int      `gorm:"column:score default:0" json:"score"`
-	Answers       []Answer `gorm:"foreignKey:question_id;id" json:"answers"`
-	Tags          []Tag    `gorm:"many2many:question_tags" json:"tags"`
-	CreatedBy     uint64   `gorm:"column:created_by" json:"created_by" `
-	Slug          string   `gorm:"column:slug" json:"slug"`
-	// UpvotedUsers  []UpVotedBy `gorm:"foreignKey:question_id;id" json:"upvotedUsers"`
+	Title         string      `gorm:"column:title" json:"title"`
+	Body          string      `gorm:"column:body" json:"body"`
+	IsAnswered    bool        `gorm:"column:is_answered default:false" json:"is_answered"`
+	ViewCount     int         `gorm:"column:view_count default:0" json:"view_count"`
+	DownVoteCount int         `gorm:"column:down_vote_count default:0" json:"down_vote_count"`
+	UpVoteCount   int         `grom:"column:up_vote_count default:0" json:"up_vote_count"`
+	AnswerCount   int         `gorm:"column:answer_count default:0" json:"answer_count"`
+	Score         int         `gorm:"column:score default:0" json:"score"`
+	CreatedBy     uint64      `gorm:"column:created_by" json:"created_by" `
+	Slug          string      `gorm:"column:slug" json:"slug"`
+	Answers       []Answer    `gorm:"foreignKey:question_id;id" json:"answers"`
+	Tags          []Tag       `gorm:"many2many:question_tags" json:"tags"`
+	UpvotedUsers  []UpVotedBy `gorm:"many2many:question_id;id" json:"upvotedUsers"`
 }
 
 type Answer struct {
@@ -48,7 +49,8 @@ type Tag struct {
 }
 
 type UpVotedBy struct {
-	UserId int `json:"upvoted"`
+	models.Model
+	UserId uint `json:"uuid"`
 }
 
 type QuestionCreateRequest struct {
@@ -81,6 +83,10 @@ type QuestionService interface {
 	//utils
 	GetQuestionByID(id uint) Question
 	UpdateQuestionViews(id uint)
+
+	// vote
+	UpVotePost(user *user.User, question *Question)
+	isUpvoted(user *user.User, question *Question) bool
 }
 
 // NewService - create a instance of this service and return
