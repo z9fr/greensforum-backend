@@ -1,8 +1,8 @@
 package question
 
 // fetch all posts avaible
-func (s *Service) GetAllPosts() []Question {
-	var questions []Question
+func (s *Service) GetAllQuestions() []*Question {
+	var questions []*Question
 	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Find(&questions)
 
 	return questions

@@ -38,7 +38,7 @@ func (app *App) Run() error {
 	questionservice := question.NewService(db)
 	topwordsService := topwords.InitTopTenWordsService()
 
-	handler := transportHttp.NewHandler(userService, questionservice, &topwordsService)
+	handler := transportHttp.NewHandler(userService, questionservice, topwordsService)
 	handler.SetupRotues()
 
 	if err := http.ListenAndServe(":4000", handler.Router); err != nil {
