@@ -12,8 +12,7 @@ import "net/http"
 // @Router /view/questions [GET]
 // @Tags Question
 func (h *Handler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
-	questions := h.QuestionService.GetAllPosts()
-
+	questions := h.QuestionService.GetAllQuestions()
 	h.sendOkResponse(w, questions)
 	return
 }

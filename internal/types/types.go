@@ -24,3 +24,9 @@ type AuthRequest struct {
 	Token  string `json:"token"`
 	Expire int64  `json:"expire"`
 }
+
+type TopWord struct {
+	Model
+	Word  string `json:"word"`
+	Count int    `json:"count"`
+}

@@ -16,11 +16,11 @@ type Handler struct {
 	Router          *chi.Mux
 	UserService     *user.Service
 	QuestionService *question.Service
-	TopWordsService *topwords.ITopTenWords
+	TopWordsService topwords.ITopTenWords
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
-func NewHandler(userService *user.Service, questionService *question.Service, topwordsservice *topwords.ITopTenWords) *Handler {
+func NewHandler(userService *user.Service, questionService *question.Service, topwordsservice topwords.ITopTenWords) *Handler {
 	return &Handler{
 		UserService:     userService,
 		QuestionService: questionService,

@@ -39,7 +39,8 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	q, err := h.QuestionService.CreateNewQuestion(question)
+	topw := h.TopWordsService.TopTenWords(question.Title)
+	q, err := h.QuestionService.CreateNewQuestion(question, topw)
 
 	if err != nil {
 		LogWarningsWithRequestInfo(r, err)

@@ -13,22 +13,19 @@ import (
 	"sort"
 	"strings"
 	"sync"
-)
 
-type TopWord struct {
-	Word  string `json:"word"`
-	Count int    `json:"count"`
-}
+	"github.com/z9fr/greensforum-backend/internal/types"
+)
 
 type WordMapContainer struct {
 	mu                   sync.Mutex
 	wg                   sync.WaitGroup
 	WordOccurrenceMap    map[string]int
-	WordOccurrenceStruct []TopWord
+	WordOccurrenceStruct []types.TopWord
 }
 
 type ITopTenWords interface {
-	TopTenWords(textInput string) []byte
+	TopTenWords(textInput string) []types.TopWord
 	WordCount() int
 	Reset()
 }
@@ -42,10 +39,10 @@ func InitTopTenWordsService() ITopTenWords {
 
 func (c *WordMapContainer) Reset() {
 	c.WordOccurrenceMap = make(map[string]int)
-	c.WordOccurrenceStruct = make([]TopWord, 0)
+	c.WordOccurrenceStruct = make([]types.TopWord, 0)
 }
 
-func (c *WordMapContainer) TopTenWords(textInput string) []byte {
+func (c *WordMapContainer) TopTenWords(textInput string) []types.TopWord {
 
 	r := regexp.MustCompile(`[^a-zA-Z\-'’]`)
 
@@ -71,7 +68,10 @@ func (c *WordMapContainer) TopTenWords(textInput string) []byte {
 	c.MapToStruct()
 	c.Sort()
 
-	return c.ToJson()
+	// 	return c.ToJson()
+
+	return c.WordOccurrenceStruct
+
 }
 
 func (c *WordMapContainer) PushWordToMap(word string) {
@@ -86,7 +86,7 @@ func (c *WordMapContainer) PushWordToMap(word string) {
 
 func (c *WordMapContainer) MapToStruct() {
 	for key, val := range c.WordOccurrenceMap {
-		c.WordOccurrenceStruct = append(c.WordOccurrenceStruct, TopWord{
+		c.WordOccurrenceStruct = append(c.WordOccurrenceStruct, types.TopWord{
 			Word:  key,
 			Count: val,
 		})
