@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/z9fr/greensforum-backend/cmd/server"
+	"github.com/z9fr/greensforum-backend/algorithm"
 	_ "github.com/z9fr/greensforum-backend/docs"
 )
 
@@ -26,7 +26,7 @@ import (
 
 func main() {
 	// start and run the server
-	server.Start()
-	//algorithm.Start()
+	//	server.Start()
+	algorithm.Start()
 
 }
