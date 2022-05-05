@@ -86,3 +86,39 @@ func (h *Handler) GetCollectiveBySlug(w http.ResponseWriter, r *http.Request) {
 	h.sendOkResponse(w, c)
 
 }
+
+// @Summary view unaproved posts
+// @Description list all unaproved posts in a collective
+// @Accept  json
+// @Produce  json
+// @Param   collective   path  string  true  "collective slug"
+// @Success 200 {object} collective.Post
+// @Router /collectives/{collective}/unaproved [GET]
+// @Security JWT
+// @Tags Collectives
+func (h *Handler) ViewUnaprovedPosts(w http.ResponseWriter, r *http.Request) {
+
+	collective_slug := chi.URLParam(r, "collective")
+
+	var u user.User
+	u = r.Context().Value("user").(user.User)
+
+	if !h.CollectiveService.IsUniqueSlug(collective_slug) {
+		h.sendErrorResponse(w, "404 not found", errors.New("collective not found"), http.StatusNotFound)
+		return
+	}
+
+	posts, err, success := h.CollectiveService.GetUnaprovtedPosts(collective_slug, u)
+
+	if err != nil {
+		h.sendErrorResponse(w, "Unable to get unaproved Posts", err, http.StatusInternalServerError)
+		return
+	}
+
+	if !success {
+		h.sendErrorResponse(w, "Unable to get unaproved Posts", errors.New("unknown errors occured"), http.StatusInternalServerError)
+		return
+	}
+
+	h.sendOkResponse(w, posts)
+}

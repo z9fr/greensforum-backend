@@ -56,6 +56,7 @@ type CollectiveService interface {
 	IsPostSlugExist(slug string) bool
 	IsCollectiveNameExist(title string) bool
 	IsCollectiveSlugExist(slug string) bool
+	GetUnaprovtedPosts(collective_slug string, u user.User) ([]Post, error, bool)
 
 	// fetch
 	GetAllCollectives() []*Collective

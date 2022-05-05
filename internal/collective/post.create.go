@@ -7,13 +7,15 @@ import (
 	"github.com/z9fr/greensforum-backend/internal/utils"
 )
 
+//@TODO
+// can optimize this code by removing these return values
 func (s *Service) CreatePostinCollective(post Post, u user.User, collective_slug string) (Collective, []user.User, user.Nofication, error, bool) {
 	collective := s.GetCollectiveBySlug(collective_slug)
 
 	post.Slug = utils.GenerateSlug(post.Title)
 	// check if post slug is alreay taken
 
-	if !s.IsPostSlugExist(post.Slug) {
+	if s.IsPostSlugExist(post.Slug) {
 		return Collective{}, []user.User{}, user.Nofication{}, errors.New("this post title with the same slug already exist. "), false
 	}
 
