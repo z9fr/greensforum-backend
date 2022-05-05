@@ -49,7 +49,7 @@ func (h *Handler) UpvotePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	upvoted, interests := h.QuestionService.UpVotePost(&u, &question)
+	upvoted, interests := h.QuestionService.UpVotePost(u, question)
 
 	if upvoted {
 		h.UserService.AppendUserInterests(complete_user, interests)
