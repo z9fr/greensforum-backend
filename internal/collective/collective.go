@@ -56,7 +56,6 @@ type CollectiveService interface {
 	GetCollectiveBySlug(slug string) *Collective
 
 	// post
-
 	CreatePostinCollective(post Post, user user.User, collective_slug string) (Collective, error)
 
 	// privilages

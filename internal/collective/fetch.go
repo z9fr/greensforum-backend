@@ -17,9 +17,10 @@ func (s *Service) GetAllCollectives() []*Collective {
 
 func (s *Service) GetCollectiveBySlug(slug string) *Collective {
 	var collective *Collective
-	s.DB.Debug().Preload("Admins").Preload("Members").Find(&collective).Where("slug = ", slug)
+	s.DB.Debug().Preload("Admins").Preload("Members").Preload("Post").Find(&collective).Where("slug = ", slug)
 	s.DB.Debug().Preload("UserAcc").Find(&collective.Members)
 	s.DB.Debug().Preload("UserAcc").Find(&collective.Admins)
+	s.DB.Debug().Preload("Comments").Find(&collective.Post)
 
 	return collective
 }
