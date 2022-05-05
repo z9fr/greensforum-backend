@@ -21,12 +21,13 @@ User Types
 
 type User struct {
 	ID          uint64
-	Username    string       `gorm:"column:username" json:"username"`
-	Email       string       `gorm:"column:email" json:"email"`
-	Password    string       `gorm:"column:password" json:"-"`
-	UserType    int          `gorm:"column:user_type" json:"user_type"`
-	UserAcc     Account      `json:"account" gorm:"foreignKey:user_id;id"`
-	Nofications []Nofication `gorm:"many2many:user_nofication" json:"-"`
+	Username    string          `gorm:"column:username" json:"username"`
+	Email       string          `gorm:"column:email" json:"email"`
+	Password    string          `gorm:"column:password" json:"-"`
+	UserType    int             `gorm:"column:user_type" json:"user_type"`
+	UserAcc     Account         `json:"account" gorm:"foreignKey:user_id;id"`
+	Nofications []Nofication    `gorm:"many2many:user_nofication" json:"-"`
+	Interests   []types.TopWord `gorm:"many2many:user_interests" json:"interests"`
 }
 
 type Account struct {
@@ -78,6 +79,9 @@ type UserService interface {
 	// nofications
 	SendNofications(user User, nofication Nofication)
 	GetNofications(user User) []Nofication
+
+	// interests
+	AppendUserInterests(user User, interests types.TopWord) bool
 }
 
 func NewService(db *gorm.DB) *Service {
