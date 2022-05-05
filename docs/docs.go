@@ -25,6 +25,71 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/collective/create": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "creating a new collective",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collective"
+                ],
+                "summary": "Create a new CreateCollective",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/collective.Collective"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collective.Collective"
+                        }
+                    }
+                }
+            }
+        },
+        "/collectives": {
+            "get": {
+                "description": "get all collectives",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collective"
+                ],
+                "summary": "Get all Collectives",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/collective.Collective"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/question/create": {
             "post": {
                 "security": [
@@ -330,6 +395,65 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "collective.Collective": {
+            "type": "object",
+            "properties": {
+                "admins": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.User"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_user": {
+                    "type": "integer"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fb": {
+                    "type": "string"
+                },
+                "gh": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo_url": {
+                    "type": "string"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.User"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "twitter": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
         "http.VoteStruct": {
             "type": "object",
             "properties": {
@@ -419,6 +543,12 @@ const docTemplate = `{
                 },
                 "is_answered": {
                     "type": "boolean"
+                },
+                "relatedtopics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.TopWord"
+                    }
                 },
                 "score": {
                     "type": "integer"
@@ -528,6 +658,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.TopWord": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "word": {
                     "type": "string"
                 }
             }

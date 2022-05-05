@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	_ "github.com/lib/pq"
 	"github.com/z9fr/greensforum-backend/internal/collective"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
@@ -29,7 +30,10 @@ func (h *Handler) CreateCollective(w http.ResponseWriter, r *http.Request) {
 		h.sendErrorResponse(w, "unable to decode json body", err, http.StatusInternalServerError)
 		return
 	}
+	// add the created usr as a admin
 	data.CreatedBy = uint(u.ID)
+	data.Admins = append(data.Admins, u)
+
 	c, err := h.CollectiveService.CreateNewCollective(data)
 
 	if err != nil {

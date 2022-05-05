@@ -23,7 +23,7 @@ type Collective struct {
 	Twitter     string         `gorm:"twitter" json:"twitter"`
 	Facebook    string         `gorm:"fb" json:"fb"`
 	Members     []user.User    `gorm:"many2many:user_collective;"`
-	Tags        pq.StringArray `gorm:"type:varchar(64)[]" json:"tags"`
+	Tags        pq.StringArray `gorm:"type:varchar(64)[]" json:"tags" swaggertype:"string"`
 	CreatedBy   uint           `gorm:"creted_user" json:"created_user"`
 	Admins      []user.User    `gorm:"many2many:collective_admins;"`
 }
