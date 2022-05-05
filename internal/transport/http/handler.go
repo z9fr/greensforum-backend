@@ -100,6 +100,14 @@ func (h *Handler) SetupRotues() {
 				r.Post("/write", h.WritePostinCollective)
 				r.Get("/unaproved", h.ViewUnaprovedPosts)
 			})
+
+			r.Route("/{collective}/{post}", func(r chi.Router) {
+				r.Route("/approve", func(r chi.Router) {
+					r.Use(h.JWTMiddlewhare)
+					r.Post("/", h.ApprovePost)
+				})
+			})
+
 		})
 		r.Route("/", func(r chi.Router) {
 			r.Use(h.JWTMiddlewhare)

@@ -65,6 +65,8 @@ type CollectiveService interface {
 
 	// post
 	CreatePostinCollective(post Post, u user.User, collective_slug string) (Collective, []user.User, user.Nofication, error, bool)
+	ApprovePosts(post_slug string, collective_slug string, u user.User) (Post, error, bool)
+	GetPostBySlug(slug string) Post
 
 	// privilages
 	IsCollectiveAdmin(collective *Collective, user user.User) bool
