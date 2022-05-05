@@ -84,6 +84,7 @@ type QuestionService interface {
 	//utils
 	GetQuestionByID(id uint) Question
 	UpdateQuestionViews(id uint)
+	IsQuestionExist(id uint) bool
 
 	// vote
 	UpVotePost(user *user.User, question *Question)

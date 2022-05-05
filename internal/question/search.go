@@ -2,7 +2,7 @@ package question
 
 func (s *Service) GetQuestionByID(id uint) Question {
 	var question Question
-	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").First(&question).Where("id = ?", id)
+	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Preload("Related").First(&question).Where("id = ?", id)
 
 	return question
 }
