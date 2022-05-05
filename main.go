@@ -27,5 +27,6 @@ import (
 func main() {
 	// start and run the server
 	server.Start()
+	//algorithm.Start()
 
 }

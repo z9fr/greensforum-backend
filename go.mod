@@ -11,6 +11,7 @@ require (
 	github.com/swaggo/http-swagger v1.2.7
 	github.com/swaggo/swag v1.8.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/exp v0.0.0-20220428152302-39d4317da171
 	gorm.io/driver/postgres v1.3.5
 	gorm.io/gorm v1.23.5
 )
