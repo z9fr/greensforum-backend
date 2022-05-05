@@ -2,7 +2,6 @@ package question
 
 import (
 	"errors"
-	"strings"
 
 	"github.com/z9fr/greensforum-backend/internal/types"
 	utils "github.com/z9fr/greensforum-backend/internal/utils"
@@ -17,7 +16,7 @@ func (s *Service) CreateNewQuestion(question Question, topwords []types.TopWord)
 
 	// generate slug and append related topics
 	question.Related = append(question.Related, topwords...)
-	question.Slug = s.GenerateSlug(question.Title)
+	question.Slug = utils.GenerateSlug(question.Title)
 
 	if result := s.DB.Debug().Save(&question); result.Error != nil {
 		utils.LogWarn(result.Error)
@@ -42,15 +41,4 @@ func (s *Service) CreateAnswer(answer Answer, question_id uint) (Question, error
 
 	return question, nil
 
-}
-
-// generate a unique slug for a post
-// @TODO
-// do more validations and checking
-func (s *Service) GenerateSlug(title string) string {
-	title = utils.FirstN(title, 80)
-	title = strings.ToLower(title)
-	title = strings.ReplaceAll(title, " ", "-")
-
-	return title
 }

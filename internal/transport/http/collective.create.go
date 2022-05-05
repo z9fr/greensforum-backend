@@ -15,7 +15,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param payload body collective.Collective true "payload"
-// @Success 200 {object} collective.Collective
+// @Success 200 {array} collective.Collective
 // @Router /collective/create [POST]
 // @Security JWT
 // @Tags Collective
@@ -30,9 +30,10 @@ func (h *Handler) CreateCollective(w http.ResponseWriter, r *http.Request) {
 		h.sendErrorResponse(w, "unable to decode json body", err, http.StatusInternalServerError)
 		return
 	}
-	// add the created usr as a admin
+	// add the created usr as a admin and as a member
 	data.CreatedBy = uint(u.ID)
 	data.Admins = append(data.Admins, u)
+	data.Members = append(data.Members, u)
 
 	c, err := h.CollectiveService.CreateNewCollective(data)
 

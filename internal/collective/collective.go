@@ -26,6 +26,25 @@ type Collective struct {
 	Tags        pq.StringArray `gorm:"type:varchar(64)[]" json:"tags" swaggertype:"string"`
 	CreatedBy   uint           `gorm:"creted_user" json:"created_user"`
 	Admins      []user.User    `gorm:"many2many:collective_admins;"`
+	Post        []Post         `gorm:"many2many:collective_posts;"`
+}
+
+type Post struct {
+	types.Model
+	Title         string         `gorm:"column:title" json:"title"`
+	Body          string         `gorm:"column:body" json:"body"`
+	IsAccepted    bool           `gorm:"column:is_accepted" json:"is_accepted"`
+	DownVoteCount int            `gorm:"column:down_vote_count default:0" json:"down_vote_count"`
+	UpVoteCount   int            `grom:"column:up_vote_count default:0" json:"up_vote_count"`
+	CreatedBy     uint           `gorm:"creted_user" json:"created_user"`
+	Tags          pq.StringArray `gorm:"type:varchar(64)[]" json:"tags" swaggertype:"array"`
+	Comments      []Comments     `gorm:"many2many:post_comments;" json:"comments"`
+}
+
+type Comments struct {
+	types.Model
+	CreatedBy uint   `gorm:"creted_user" json:"created_user"`
+	Content   string `gorm:"column:body" json:"content"`
 }
 
 type CollectiveService interface {
@@ -33,7 +52,16 @@ type CollectiveService interface {
 	CreateNewCollective(collective Collective) (Collective, error)
 
 	// fetch
-	GetAllCollectives() []Collective
+	IsUniqueSlug(slug string) bool
+	GetAllCollectives() []*Collective
+	GetCollectiveBySlug(slug string) *Collective
+
+	// post
+	CreatePostinCollective(post Post, user user.User, collective_slug string) (Collective, error)
+
+	// privilages
+	IsCollectiveAdmin(collective *Collective, user user.User) bool
+	IsCollectiveMember(collective *Collective, user user.User) bool
 }
 
 // NewService - create a instance of this service and return
