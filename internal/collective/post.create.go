@@ -4,13 +4,17 @@ import (
 	"errors"
 
 	"github.com/z9fr/greensforum-backend/internal/user"
+	"github.com/z9fr/greensforum-backend/internal/utils"
 )
 
 func (s *Service) CreatePostinCollective(post Post, u user.User, collective_slug string) (Collective, []user.User, user.Nofication, error, bool) {
 	collective := s.GetCollectiveBySlug(collective_slug)
 
-	if collective.Slug == "" || collective.Name == "" {
-		return Collective{}, []user.User{}, user.Nofication{}, errors.New("not a valid collective"), false
+	post.Slug = utils.GenerateSlug(post.Title)
+	// check if post slug is alreay taken
+
+	if post.Slug == "" || post.Title == "" {
+		return Collective{}, []user.User{}, user.Nofication{}, errors.New("please fill all the required values"), false
 	}
 
 	if !s.IsCollectiveMember(collective, u) {
@@ -22,7 +26,7 @@ func (s *Service) CreatePostinCollective(post Post, u user.User, collective_slug
 	nf.Message = "new post is waiting for aproval view post at <a href=/posts/unaproved/" + post.Slug + "> here </a>"
 
 	collective.Post = append(collective.Post, post)
-	s.DB.Debug().Save(&collective)
+	//s.DB.Debug().Save(&collective)
 
 	return *collective, collective.Admins, nf, nil, true
 }
