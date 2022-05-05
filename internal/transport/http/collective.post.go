@@ -10,6 +10,11 @@ import (
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
+/*
+@TODO
+maybe add the collective check to a middlewhare
+*/
+
 // @Summary write a post
 // @Description create a post in collective
 // @in header
@@ -65,28 +70,6 @@ func (h *Handler) WritePostinCollective(w http.ResponseWriter, r *http.Request) 
 
 }
 
-// @Summary get collective by slug
-// @Description get infromation about a collecting using slug
-// @in header
-// @Accept  json
-// @Produce  json
-// @Param   collective   path  string  true  "collective slug"
-// @Success 200 {object} collective.Collective
-// @Router /collectives/{collective} [GET]
-// @Tags Collectives
-func (h *Handler) GetCollectiveBySlug(w http.ResponseWriter, r *http.Request) {
-	collective_slug := chi.URLParam(r, "collective")
-
-	if !h.CollectiveService.IsUniqueSlug(collective_slug) {
-		h.sendErrorResponse(w, "404 not found", errors.New("collective not found"), http.StatusNotFound)
-		return
-	}
-
-	c := h.CollectiveService.GetCollectiveBySlug(collective_slug)
-	h.sendOkResponse(w, c)
-
-}
-
 // @Summary view unaproved posts
 // @Description list all unaproved posts in a collective
 // @Accept  json
@@ -121,4 +104,43 @@ func (h *Handler) ViewUnaprovedPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.sendOkResponse(w, posts)
+}
+
+// @Summary approve post
+// @Description approve post
+// @Accept  json
+// @Produce  json
+// @Param   collective   path  string  true  "collective slug"
+// @Param   post   path  string  true  "post slug"
+// @Success 200 {object} collective.Post
+// @Router /collectives/{collective}/{post}/approve [POST]
+// @Security JWT
+// @Tags Collectives
+func (h *Handler) ApprovePost(w http.ResponseWriter, r *http.Request) {
+
+	collective_slug := chi.URLParam(r, "collective")
+	post_slug := chi.URLParam(r, "post")
+
+	var u user.User
+	u = r.Context().Value("user").(user.User)
+
+	if !h.CollectiveService.IsUniqueSlug(collective_slug) {
+		h.sendErrorResponse(w, "404 not found", errors.New("collective "+collective_slug+" not found"), http.StatusNotFound)
+		return
+	}
+
+	if !h.CollectiveService.IsPostSlugExist(post_slug) {
+		h.sendErrorResponse(w, "404 not found", errors.New("cant find "+post_slug+" in collective "+collective_slug), http.StatusNotFound)
+		return
+	}
+
+	post, err, _ := h.CollectiveService.ApprovePosts(post_slug, collective_slug, u)
+
+	if err != nil {
+		h.sendErrorResponse(w, "Unable to approve post", err, http.StatusInternalServerError)
+		return
+	}
+
+	h.sendOkResponse(w, post)
+
 }
