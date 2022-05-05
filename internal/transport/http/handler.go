@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/z9fr/greensforum-backend/internal/collective"
 	"github.com/z9fr/greensforum-backend/internal/question"
 	topwords "github.com/z9fr/greensforum-backend/internal/top-words"
 	"github.com/z9fr/greensforum-backend/internal/user"
@@ -13,18 +14,23 @@ import (
 
 type Handler struct {
 	// service and router
-	Router          *chi.Mux
-	UserService     *user.Service
-	QuestionService *question.Service
-	TopWordsService topwords.ITopTenWords
+	Router            *chi.Mux
+	UserService       *user.Service
+	QuestionService   *question.Service
+	TopWordsService   topwords.ITopTenWords
+	CollectiveService *collective.Service
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
-func NewHandler(userService *user.Service, questionService *question.Service, topwordsservice topwords.ITopTenWords) *Handler {
+func NewHandler(userService *user.Service,
+	questionService *question.Service,
+	topwordsservice topwords.ITopTenWords,
+	collectiveService *collective.Service) *Handler {
 	return &Handler{
-		UserService:     userService,
-		QuestionService: questionService,
-		TopWordsService: topwordsservice,
+		UserService:       userService,
+		QuestionService:   questionService,
+		TopWordsService:   topwordsservice,
+		CollectiveService: collectiveService,
 	}
 }
 
@@ -69,6 +75,11 @@ func (h *Handler) SetupRotues() {
 			r.Post("/create", h.CreatePost)
 			r.Post("/{qid}/answer/create", h.WriteAnswer)
 			r.Patch("/upvote", h.UpvotePost)
+		})
+
+		r.Route("/collective", func(r chi.Router) {
+			r.Use(h.JWTMiddlewhare)
+			r.Post("/create", h.CreateCollective)
 		})
 
 		r.Route("/", func(r chi.Router) {
