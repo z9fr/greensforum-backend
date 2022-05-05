@@ -2,7 +2,7 @@
 
 ### User
 - [x] user Auth
-- [ ] Notifications
+- [x] Notifications
 - [ ] profile
 - [ ] reputation
 
@@ -24,7 +24,7 @@
 - [x] view collection 
 - [ ] create article
 - [ ] fetch posts based on the tags
-- [ ] write post
-- [ ] accept posts by admins
+- [x] write post
+- [x] accept posts by admins
 
 

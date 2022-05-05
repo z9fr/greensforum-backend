@@ -28,6 +28,8 @@ func (s *Service) CreatePostinCollective(post Post, u user.User, collective_slug
 	}
 
 	var nf user.Nofication
+	// add the current user as creatd user
+	post.CreatedBy = uint(u.ID)
 
 	nf.Message = "new post is waiting for aproval view post at <a href=/posts/unaproved/" + post.Slug + "> here </a>"
 

@@ -109,6 +109,11 @@ func (h *Handler) SetupRotues() {
 			})
 
 		})
+
+		r.Route("/post/", func(r chi.Router) {
+			r.Get("/{post}", h.GetPostbySlug)
+		})
+
 		r.Route("/", func(r chi.Router) {
 			r.Use(h.JWTMiddlewhare)
 			r.Get("/test", h.TestRoute)
