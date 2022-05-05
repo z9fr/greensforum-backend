@@ -16,3 +16,5 @@ func (h *Handler) FetchCollectives(w http.ResponseWriter, r *http.Request) {
 	colletives := h.CollectiveService.GetAllCollectives()
 	h.sendOkResponse(w, colletives)
 }
+
+// view unaproved posts in a collection

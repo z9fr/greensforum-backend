@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/z9fr/greensforum-backend/internal/types"
 	"gorm.io/gorm"
 )
 
@@ -19,12 +20,13 @@ User Types
 */
 
 type User struct {
-	ID       uint64
-	Username string  `gorm:"column:username" json:"username"`
-	Email    string  `gorm:"column:email" json:"email"`
-	Password string  `gorm:"column:password" json:"-"`
-	UserType int     `gorm:"column:user_type" json:"user_type"`
-	UserAcc  Account `json:"account" gorm:"foreignKey:user_id;id"`
+	ID          uint64
+	Username    string       `gorm:"column:username" json:"username"`
+	Email       string       `gorm:"column:email" json:"email"`
+	Password    string       `gorm:"column:password" json:"-"`
+	UserType    int          `gorm:"column:user_type" json:"user_type"`
+	UserAcc     Account      `json:"account" gorm:"foreignKey:user_id;id"`
+	Nofications []Nofication `gorm:"many2many:user_nofication" json:"-"`
 }
 
 type Account struct {
@@ -54,6 +56,12 @@ type CreateUserRequest struct {
 	} `json:"account"`
 }
 
+type Nofication struct {
+	types.Model
+	Message string `gorm:"column:message" json:"message"`
+	Read    bool   `gorm:"read" json:"read"`
+}
+
 type Service struct {
 	DB *gorm.DB
 }
@@ -66,6 +74,10 @@ type UserService interface {
 	// roles
 	IsAdmin(user User) bool
 	IsHighPriv(user User)
+
+	// nofications
+	SendNofications(user User, nofication Nofication)
+	GetNofications(user User) []Nofication
 }
 
 func NewService(db *gorm.DB) *Service {

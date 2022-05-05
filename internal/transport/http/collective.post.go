@@ -31,6 +31,8 @@ func (h *Handler) WritePostinCollective(w http.ResponseWriter, r *http.Request) 
 	var u user.User
 	u = r.Context().Value("user").(user.User)
 
+	complete_user, _ := h.UserService.GetUserByEmail(u.Email)
+
 	if err := json.NewDecoder(r.Body).Decode(&postcontent); err != nil {
 		LogWarningsWithRequestInfo(r, err)
 		h.sendErrorResponse(w, "unable to decode json body", err, 500)
@@ -42,11 +44,21 @@ func (h *Handler) WritePostinCollective(w http.ResponseWriter, r *http.Request) 
 	postcontent.DownVoteCount = 0
 	postcontent.IsAccepted = false
 
-	collective, err := h.CollectiveService.CreatePostinCollective(postcontent, u, collective_slug)
+	collective, admins, nofication, err, success := h.CollectiveService.CreatePostinCollective(postcontent, complete_user, collective_slug)
 
 	if err != nil {
 		h.sendErrorResponse(w, "Unable to create a post", err, http.StatusInternalServerError)
 		return
+	}
+
+	if !success {
+		h.sendErrorResponse(w, "Unable to create a post", errors.New("Something went wrong while creating the post please contact admins"), http.StatusInternalServerError)
+		return
+	}
+
+	// send nofications for admins
+	for _, admin := range admins {
+		h.UserService.SendNofications(admin, nofication)
 	}
 
 	h.sendOkResponse(w, collective)
@@ -73,4 +85,40 @@ func (h *Handler) GetCollectiveBySlug(w http.ResponseWriter, r *http.Request) {
 	c := h.CollectiveService.GetCollectiveBySlug(collective_slug)
 	h.sendOkResponse(w, c)
 
+}
+
+// @Summary view unaproved posts
+// @Description list all unaproved posts in a collective
+// @Accept  json
+// @Produce  json
+// @Param   collective   path  string  true  "collective slug"
+// @Success 200 {object} collective.Post
+// @Router /collectives/{collective}/unaproved [GET]
+// @Security JWT
+// @Tags Collectives
+func (h *Handler) ViewUnaprovedPosts(w http.ResponseWriter, r *http.Request) {
+
+	collective_slug := chi.URLParam(r, "collective")
+
+	var u user.User
+	u = r.Context().Value("user").(user.User)
+
+	if !h.CollectiveService.IsUniqueSlug(collective_slug) {
+		h.sendErrorResponse(w, "404 not found", errors.New("collective not found"), http.StatusNotFound)
+		return
+	}
+
+	posts, err, success := h.CollectiveService.GetUnaprovtedPosts(collective_slug, u)
+
+	if err != nil {
+		h.sendErrorResponse(w, "Unable to get unaproved Posts", err, http.StatusInternalServerError)
+		return
+	}
+
+	if !success {
+		h.sendErrorResponse(w, "Unable to get unaproved Posts", errors.New("unknown errors occured"), http.StatusInternalServerError)
+		return
+	}
+
+	h.sendOkResponse(w, posts)
 }

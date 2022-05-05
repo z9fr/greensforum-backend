@@ -15,7 +15,7 @@ func (s *Service) GetUserByEmail(email string) (User, error) {
 		return User{}, fmt.Errorf("No user with that email")
 	}
 
-	if result := s.DB.Debug().Preload("UserAcc").First(&user, "email = ?", email); result.Error != nil {
+	if result := s.DB.Debug().Preload("UserAcc").Preload("Nofications").First(&user, "email = ?", email); result.Error != nil {
 		return User{}, result.Error
 	}
 

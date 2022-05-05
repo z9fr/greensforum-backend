@@ -61,6 +61,12 @@ func (h *Handler) SetupRotues() {
 			r.Post("/join", h.CreateUser)
 			r.Post("/login", h.Login)
 			r.Get("/all", h.GetAllUsers)
+
+			r.Route("/nofications", func(r chi.Router) {
+				r.Use(h.JWTMiddlewhare)
+				r.Get("/", h.GetNofications)
+			})
+
 		})
 
 		r.Route("/view", func(r chi.Router) {
@@ -92,6 +98,7 @@ func (h *Handler) SetupRotues() {
 			r.Route("/{collective}/post/", func(r chi.Router) {
 				r.Use(h.JWTMiddlewhare)
 				r.Post("/write", h.WritePostinCollective)
+				r.Get("/unaproved", h.ViewUnaprovedPosts)
 			})
 		})
 		r.Route("/", func(r chi.Router) {
