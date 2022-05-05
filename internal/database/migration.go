@@ -12,7 +12,8 @@ import (
 func MigrateDB(db *gorm.DB) error {
 	if err := db.AutoMigrate(&user.User{}, &user.Account{},
 		&question.Question{}, &question.Answer{}, &question.Tag{},
-		&question.UpVotedBy{}, &types.TopWord{}, &collective.Collective{}); err != nil {
+		&question.UpVotedBy{}, &types.TopWord{}, &collective.Post{},
+		&collective.Comments{}, &collective.Collective{}); err != nil {
 		utils.LogFatal(err)
 		return err
 	}
