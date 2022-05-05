@@ -32,6 +32,7 @@ type Collective struct {
 type Post struct {
 	types.Model
 	Title         string         `gorm:"column:title" json:"title"`
+	Slug          string         `gorm:"column:slug" json:"slug"`
 	Body          string         `gorm:"column:body" json:"body"`
 	IsAccepted    bool           `gorm:"column:is_accepted" json:"is_accepted"`
 	DownVoteCount int            `gorm:"column:down_vote_count default:0" json:"down_vote_count"`
@@ -57,7 +58,7 @@ type CollectiveService interface {
 	GetCollectiveBySlug(slug string) *Collective
 
 	// post
-	CreatePostinCollective(post Post, user user.User, collective_slug string) (Collective, error)
+	CreatePostinCollective(post Post, u user.User, collective_slug string) (Collective, []user.User, user.Nofication, error, bool)
 
 	// privilages
 	IsCollectiveAdmin(collective *Collective, user user.User) bool
