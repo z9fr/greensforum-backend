@@ -26,14 +26,14 @@ func (h *Handler) CreateCollective(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		LogWarningsWithRequestInfo(r, err)
-		h.sendErrorResponse(w, "unable to decode json body", err, 500)
+		h.sendErrorResponse(w, "unable to decode json body", err, http.StatusInternalServerError)
 		return
 	}
 	data.CreatedBy = uint(u.ID)
 	c, err := h.CollectiveService.CreateNewCollective(data)
 
 	if err != nil {
-		h.sendErrorResponse(w, "unable to create collection", err, 500)
+		h.sendErrorResponse(w, "unable to create collection", err, http.StatusInternalServerError)
 		return
 	}
 

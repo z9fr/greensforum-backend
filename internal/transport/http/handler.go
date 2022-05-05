@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -74,14 +75,18 @@ func (h *Handler) SetupRotues() {
 			r.Use(h.JWTMiddlewhare)
 			r.Post("/create", h.CreatePost)
 			r.Post("/{qid}/answer/create", h.WriteAnswer)
+
 			r.Patch("/upvote", h.UpvotePost)
 		})
 
-		r.Route("/collective", func(r chi.Router) {
-			r.Use(h.JWTMiddlewhare)
-			r.Post("/create", h.CreateCollective)
+		r.Route("/collectives", func(r chi.Router) {
+			r.Get("/", h.FetchCollectives)
+			r.Route("/create", func(r chi.Router) {
+				r.Use(h.JWTMiddlewhare)
+				r.Use(h.HighPrivilagesMiddlewhare)
+				r.Post("/", h.CreateCollective)
+			})
 		})
-
 		r.Route("/", func(r chi.Router) {
 			r.Use(h.JWTMiddlewhare)
 			r.Get("/test", h.TestRoute)
@@ -92,6 +97,20 @@ func (h *Handler) SetupRotues() {
 	h.Router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"), //The url pointing to API definition
 	))
+
+	/* handle errors */
+
+	h.Router.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]interface{}{"error": "route not found"})
+	})
+
+	h.Router.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{"error": "method is not valid"})
+	})
 
 }
 

@@ -31,6 +31,9 @@ type Collective struct {
 type CollectiveService interface {
 	// create
 	CreateNewCollective(collective Collective) (Collective, error)
+
+	// fetch
+	GetAllCollectives() []Collective
 }
 
 // NewService - create a instance of this service and return

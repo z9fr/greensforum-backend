@@ -2,10 +2,12 @@ package http
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/z9fr/greensforum-backend/internal/user"
 	"github.com/z9fr/greensforum-backend/internal/utils"
 )
 
@@ -20,7 +22,8 @@ func (h *Handler) JWTMiddlewhare(next http.Handler) http.Handler {
 		}
 
 		authToken := strings.Split(authheader[0], " ")[1]
-		user, err := utils.VerifyToken(authToken)
+		decodedUser, err := utils.VerifyToken(authToken)
+		user, err := h.UserService.GetUserByEmail(decodedUser.Email)
 
 		if err != nil {
 			LogWarningsWithRequestInfo(r, err)
@@ -31,13 +34,23 @@ func (h *Handler) JWTMiddlewhare(next http.Handler) http.Handler {
 		// create new context from `r` request context, and assign key `"user"`
 		// to value of `"123"`
 		ctx := context.WithValue(r.Context(), "user", user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
 
-		// call the next handler in the chain, passing the response writer and
-		// the updated request object with the new context value.
-		//
-		// note: context.Context values are nested, so any previously set
-		// values will be accessible as well, and the new `"user"` key
-		// will be accessible from this point forward.
+func (h *Handler) HighPrivilagesMiddlewhare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var u user.User
+		u = r.Context().Value("user").(user.User)
+
+		if !h.UserService.IsHighPriv(u) {
+			LogWarningsWithRequestInfo(r, "low-priv user trying to create a collection : user -> "+u.Email)
+			h.sendErrorResponse(w, "unable to create a collection", errors.New("not enough privilages"), http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "user", u)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
