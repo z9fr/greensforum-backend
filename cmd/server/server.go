@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/z9fr/greensforum-backend/internal/collective"
 	"github.com/z9fr/greensforum-backend/internal/database"
+	"github.com/z9fr/greensforum-backend/internal/feed"
 	"github.com/z9fr/greensforum-backend/internal/question"
 	topwords "github.com/z9fr/greensforum-backend/internal/top-words"
 	"github.com/z9fr/greensforum-backend/internal/user"
@@ -39,8 +40,10 @@ func (app *App) Run() error {
 	questionservice := question.NewService(db)
 	topwordsService := topwords.InitTopTenWordsService()
 	collectiveService := collective.NewService(db)
+	feedservice := feed.NewService(db)
 
-	handler := transportHttp.NewHandler(userService, questionservice, topwordsService, collectiveService)
+	handler := transportHttp.NewHandler(userService, questionservice,
+		topwordsService, collectiveService, feedservice)
 	handler.SetupRotues()
 
 	if err := http.ListenAndServe(":4000", handler.Router); err != nil {

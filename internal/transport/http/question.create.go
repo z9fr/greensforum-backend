@@ -40,7 +40,14 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	topw := h.TopWordsService.TopTenWords(question.Title)
-	q, err := h.QuestionService.CreateNewQuestion(question, topw)
+
+	var lastTopIndex int
+	lenWordOccurrence := len(topw)
+	if lenWordOccurrence > 10 {
+		lastTopIndex = 10
+	}
+
+	q, err := h.QuestionService.CreateNewQuestion(question, topw[:lastTopIndex])
 
 	if err != nil {
 		LogWarningsWithRequestInfo(r, err)

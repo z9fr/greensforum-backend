@@ -9,7 +9,7 @@ import (
 )
 
 // upvote a posttopwords
-func (s *Service) UpVotePost(user *user.User, question *Question) (bool, []types.TopWord) {
+func (s *Service) UpVotePost(user user.User, question Question) (bool, []types.TopWord) {
 
 	if question.Title == "" {
 		return false, []types.TopWord{}
@@ -18,6 +18,7 @@ func (s *Service) UpVotePost(user *user.User, question *Question) (bool, []types
 	voted := s.isUpvoted(user, question)
 	if voted {
 		utils.LogWarn("user already upvoted")
+		fmt.Println(question.Title)
 		return false, []types.TopWord{}
 	} else {
 		question.UpVoteCount++
@@ -31,7 +32,7 @@ func (s *Service) UpVotePost(user *user.User, question *Question) (bool, []types
 	return true, question.Related
 }
 
-func (s *Service) isUpvoted(user *user.User, question *Question) bool {
+func (s *Service) isUpvoted(user user.User, question Question) bool {
 	for _, upvoteduser := range question.UpvotedUsers {
 
 		if upvoteduser.UserId == uint(user.ID) {
