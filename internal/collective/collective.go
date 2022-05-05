@@ -52,9 +52,14 @@ type CollectiveService interface {
 	// create
 	CreateNewCollective(collective Collective) (Collective, error)
 
+	//validations
+	IsPostSlugExist(slug string) bool
+	IsCollectiveNameExist(title string) bool
+	IsCollectiveSlugExist(slug string) bool
+
 	// fetch
-	IsUniqueSlug(slug string) bool
 	GetAllCollectives() []*Collective
+	IsUniqueSlug(slug string) bool
 	GetCollectiveBySlug(slug string) *Collective
 
 	// post

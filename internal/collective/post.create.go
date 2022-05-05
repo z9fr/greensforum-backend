@@ -13,6 +13,10 @@ func (s *Service) CreatePostinCollective(post Post, u user.User, collective_slug
 	post.Slug = utils.GenerateSlug(post.Title)
 	// check if post slug is alreay taken
 
+	if !s.IsPostSlugExist(post.Slug) {
+		return Collective{}, []user.User{}, user.Nofication{}, errors.New("this post title with the same slug already exist. "), false
+	}
+
 	if post.Slug == "" || post.Title == "" {
 		return Collective{}, []user.User{}, user.Nofication{}, errors.New("please fill all the required values"), false
 	}
@@ -26,7 +30,7 @@ func (s *Service) CreatePostinCollective(post Post, u user.User, collective_slug
 	nf.Message = "new post is waiting for aproval view post at <a href=/posts/unaproved/" + post.Slug + "> here </a>"
 
 	collective.Post = append(collective.Post, post)
-	//s.DB.Debug().Save(&collective)
+	s.DB.Debug().Save(&collective)
 
 	return *collective, collective.Admins, nf, nil, true
 }

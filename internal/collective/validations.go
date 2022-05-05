@@ -33,3 +33,18 @@ func (s *Service) IsCollectiveNameExist(title string) bool {
 
 	return exists
 }
+
+// @Desctiption
+// check if a post slug is already taken
+func (s *Service) IsPostSlugExist(slug string) bool {
+	var exists bool
+	if err := s.DB.Debug().Model(&Post{}).
+		Select("count(*) > 0").
+		Where("slug = ?", slug).
+		Find(&exists).
+		Error; err != nil {
+		utils.LogWarn(err)
+	}
+
+	return exists
+}
