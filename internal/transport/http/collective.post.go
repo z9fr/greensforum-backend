@@ -142,5 +142,26 @@ func (h *Handler) ApprovePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.sendOkResponse(w, post)
+}
 
+// @Summary view post
+// @Description view post details
+// @Accept  json
+// @Produce  json
+// @Param   post   path  string  true  "post slug"
+// @Success 200 {object} collective.Post
+// @Router /post/{post} [GET]
+// @Tags Collectives
+func (h *Handler) GetPostbySlug(w http.ResponseWriter, r *http.Request) {
+
+	post_slug := chi.URLParam(r, "post")
+
+	if !h.CollectiveService.IsPostSlugExist(post_slug) {
+		h.sendErrorResponse(w, "404 not found", errors.New("cant find "+post_slug), http.StatusNotFound)
+		return
+	}
+
+	post := h.CollectiveService.GetPostBySlug(post_slug)
+
+	h.sendOkResponse(w, post)
 }
