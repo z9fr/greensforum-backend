@@ -17,5 +17,7 @@ func (s *Service) CreatePostinCollective(post Post, user user.User, collective_s
 		return Collective{}, errors.New("you need to join the collective first")
 	}
 
+	collective.Post = append(collective.Post, post)
+
 	return *collective, nil
 }

@@ -21,6 +21,7 @@
 ### Collection
 
 - [x] create Collection
+- [x] view collection 
 - [ ] create article
 - [ ] fetch posts based on the tags
 - [ ] write post

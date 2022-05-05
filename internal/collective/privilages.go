@@ -1,6 +1,10 @@
 package collective
 
-import "github.com/z9fr/greensforum-backend/internal/user"
+import (
+	"fmt"
+
+	"github.com/z9fr/greensforum-backend/internal/user"
+)
 
 // return true if a user is a member of a collective
 func (s *Service) IsCollectiveMember(collective *Collective, user user.User) bool {
@@ -8,6 +12,7 @@ func (s *Service) IsCollectiveMember(collective *Collective, user user.User) boo
 
 	for _, u := range collective.Members {
 		if u.Username == user.Username {
+			fmt.Println(u.Username, user.Username)
 			isexist = true
 		}
 	}

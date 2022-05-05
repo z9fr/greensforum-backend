@@ -82,10 +82,16 @@ func (h *Handler) SetupRotues() {
 		r.Route("/collectives", func(r chi.Router) {
 			r.Get("/", h.FetchCollectives)
 			r.Get("/{collective}", h.GetCollectiveBySlug)
+
 			r.Route("/create", func(r chi.Router) {
 				r.Use(h.JWTMiddlewhare)
 				r.Use(h.HighPrivilagesMiddlewhare)
 				r.Post("/", h.CreateCollective)
+			})
+
+			r.Route("/{collective}/post/", func(r chi.Router) {
+				r.Use(h.JWTMiddlewhare)
+				r.Post("/write", h.WritePostinCollective)
 			})
 		})
 		r.Route("/", func(r chi.Router) {

@@ -52,6 +52,7 @@ type CollectiveService interface {
 	CreateNewCollective(collective Collective) (Collective, error)
 
 	// fetch
+	IsUniqueSlug(slug string) bool
 	GetAllCollectives() []*Collective
 	GetCollectiveBySlug(slug string) *Collective
 
