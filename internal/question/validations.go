@@ -15,7 +15,6 @@ func (s *Service) IsTitleExist(title string) bool {
 	}
 
 	return exists
-
 }
 
 func (s *Service) IsQuestionExist(id uint) bool {

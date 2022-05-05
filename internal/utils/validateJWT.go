@@ -36,9 +36,6 @@ func VerifyToken(tokenString string) (user.User, error) {
 		mapstructure.Decode(claims["user"], &user)
 		return user, nil
 	} else {
-
 		return user.User{}, err
-
 	}
-
 }

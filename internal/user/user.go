@@ -23,7 +23,7 @@ type User struct {
 	Username string  `gorm:"column:username" json:"username"`
 	Email    string  `gorm:"column:email" json:"email"`
 	Password string  `gorm:"column:password" json:"-"`
-	UserType int     `gorm:"column:user_type default:0" json:"user_type"`
+	UserType int     `gorm:"column:user_type" json:"user_type"`
 	UserAcc  Account `json:"account" gorm:"foreignKey:user_id;id"`
 }
 
@@ -62,6 +62,10 @@ type UserService interface {
 	CreateUser(user User) (User, error)
 	FetchallUsers() []User
 	GetUserByEmail(email string) (User, error)
+
+	// roles
+	IsAdmin(user User) bool
+	IsHighPriv(user User)
 }
 
 func NewService(db *gorm.DB) *Service {
