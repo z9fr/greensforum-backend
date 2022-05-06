@@ -64,6 +64,8 @@ func (s *Service) GetUserInterestedQuestionsEngagement(u user.User) []*question.
 	// select * from questions where id in (select DISTINCT question_id from question_related where top_word_id in
 	//   (select id from top_words where word in ('type', 'dummy', 'text', 'lorem', 'ipsum')) );
 
+	//@TODO
+	// limit this around somehware depends on frontend
 	s.DB.Debug().
 		Raw("select * from questions where id in (select DISTINCT question_id from question_related where top_word_id in (select id from top_words where word in (?)))", vals).
 		Scan(&questions)

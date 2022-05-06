@@ -39,6 +39,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jwt, expretime, err := utils.GenerateJWT(user)
+	refreshtoken, refreshexp, err := utils.SendRefreshToken(user)
 
 	if err != nil {
 		LogWarningsWithRequestInfo(r, err)
@@ -46,11 +47,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respwithtoken := struct {
-		Token  string `json:"token"`
-		Expire int64  `json:"expire"`
+		Token        string `json:"auth_token"`
+		Expire       int64  `json:"expire"`
+		RefreshToken string `json:"refresh_token"`
+		RefreshExp   int64  `json:"refresh_expire"`
 	}{
-		Token:  jwt,
-		Expire: expretime,
+		Token:        jwt,
+		Expire:       expretime,
+		RefreshToken: refreshtoken,
+		RefreshExp:   refreshexp,
 	}
 
 	h.sendOkResponse(w, respwithtoken)

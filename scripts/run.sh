@@ -7,3 +7,4 @@ export DB_HOST=localhost
 export DB_PORT=5432
 export DB_TABLE=postgres
 export JWT_SECRET=secret
+export REFRESH_TOKEN_SECRET=secret

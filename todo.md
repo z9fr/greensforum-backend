@@ -5,6 +5,7 @@
 - [x] Notifications
 - [ ] profile
 - [ ] reputation
+- [ ] endpoint to revoke refresh tokens
 
 
 ### question
