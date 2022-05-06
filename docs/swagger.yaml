@@ -28,6 +28,10 @@ definitions:
         type: array
       name:
         type: string
+      post:
+        items:
+          $ref: '#/definitions/collective.Post'
+        type: array
       slug:
         type: string
       tags:
@@ -38,6 +42,70 @@ definitions:
         type: string
       website:
         type: string
+    type: object
+  collective.Comments:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      created_user:
+        type: integer
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  collective.Post:
+    properties:
+      body:
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/collective.Comments'
+        type: array
+      created_at:
+        type: string
+      created_user:
+        type: integer
+      deleted_at:
+        type: string
+      down_vote_count:
+        type: integer
+      id:
+        type: integer
+      is_accepted:
+        type: boolean
+      slug:
+        type: string
+      tags:
+        type: string
+      title:
+        type: string
+      up_vote_count:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  http.RefreshReq:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  http.RefreshResponse:
+    properties:
+      auth:
+        type: string
+      auth_expire:
+        type: integer
+      refresh:
+        type: string
+      refresh_expire:
+        type: integer
+      user_type:
+        type: integer
     type: object
   http.VoteStruct:
     properties:
@@ -238,6 +306,21 @@ definitions:
       username:
         type: string
     type: object
+  user.Nofication:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      read:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
   user.User:
     properties:
       account:
@@ -245,6 +328,12 @@ definitions:
       email:
         type: string
       id:
+        type: integer
+      interests:
+        items:
+          $ref: '#/definitions/types.TopWord'
+        type: array
+      tokenversion:
         type: integer
       user_type:
         type: integer
@@ -306,6 +395,120 @@ paths:
       summary: Get all Collectives
       tags:
       - Collective
+  /collectives/{collective}:
+    get:
+      consumes:
+      - application/json
+      description: get infromation about a collecting using slug
+      parameters:
+      - description: collective slug
+        in: path
+        name: collective
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collective.Collective'
+      summary: get collective by slug
+      tags:
+      - Collectives
+  /collectives/{collective}/{post}/approve:
+    post:
+      consumes:
+      - application/json
+      description: approve post
+      parameters:
+      - description: collective slug
+        in: path
+        name: collective
+        required: true
+        type: string
+      - description: post slug
+        in: path
+        name: post
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collective.Post'
+      security:
+      - JWT: []
+      summary: approve post
+      tags:
+      - Collectives
+  /collectives/{collective}/post/write:
+    post:
+      consumes:
+      - application/json
+      description: create a post in collective
+      parameters:
+      - description: collective slug
+        in: path
+        name: collective
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collective.Post'
+      summary: write a post
+      tags:
+      - Collectives
+  /collectives/{collective}/unaproved:
+    get:
+      consumes:
+      - application/json
+      description: list all unaproved posts in a collective
+      parameters:
+      - description: collective slug
+        in: path
+        name: collective
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collective.Post'
+      security:
+      - JWT: []
+      summary: view unaproved posts
+      tags:
+      - Collectives
+  /post/{post}:
+    get:
+      consumes:
+      - application/json
+      description: view post details
+      parameters:
+      - description: post slug
+        in: path
+        name: post
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/collective.Post'
+      summary: view post
+      tags:
+      - Collectives
   /question/{qid}/answer/create:
     post:
       consumes:
@@ -387,6 +590,11 @@ paths:
       summary: Upvote a question
       tags:
       - Question
+  /user/feed:
+    get:
+      responses: {}
+      tags:
+      - Feed
   /user/join:
     post:
       consumes:
@@ -429,6 +637,47 @@ paths:
           schema:
             $ref: '#/definitions/types.AuthRequest'
       summary: Authenticate User
+      tags:
+      - Authentication
+  /user/nofications:
+    get:
+      consumes:
+      - application/json
+      description: Get nofications for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user.Nofication'
+            type: array
+      security:
+      - JWT: []
+      summary: get notifications
+      tags:
+      - User
+  /user/refresh:
+    post:
+      consumes:
+      - application/json
+      description: refresh users token based on a given refresh token
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/http.RefreshReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.RefreshResponse'
+      summary: Refresh Tokens
       tags:
       - Authentication
   /view/questions:

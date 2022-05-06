@@ -15,7 +15,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param payload body collective.Collective true "payload"
-// @Success 200 {array} collective.Collective
+// @Success 200 {object} collective.Collective
 // @Router /collective/create [POST]
 // @Security JWT
 // @Tags Collective

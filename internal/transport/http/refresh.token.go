@@ -17,8 +17,17 @@ type RefreshResponse struct {
 	Authexp    int64  `json:"auth_expire"`
 	Refresh    string `json:"refresh"`
 	Refreshexp int64  `json:"refresh_expire"`
+	UserRole   int    `json:"user_type"`
 }
 
+// @Summary Refresh Tokens
+// @Description refresh users token based on a given refresh token
+// @Accept  json
+// @Produce  json
+// @Param payload body RefreshReq true "payload"
+// @Success 200 {object} RefreshResponse
+// @Router /user/refresh [POST]
+// @Tags Authentication
 func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 	var rinfo RefreshReq
@@ -61,6 +70,7 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		Authexp:    authexp,
 		Refresh:    refreshtoken,
 		Refreshexp: refreshexp,
+		UserRole:   u.UserType,
 	}
 
 	h.sendOkResponse(w, resp)
