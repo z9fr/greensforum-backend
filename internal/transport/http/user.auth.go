@@ -51,11 +51,13 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		Expire       int64  `json:"expire"`
 		RefreshToken string `json:"refresh_token"`
 		RefreshExp   int64  `json:"refresh_expire"`
+		UserRole     int    `json:"user_type"`
 	}{
 		Token:        jwt,
 		Expire:       expretime,
 		RefreshToken: refreshtoken,
 		RefreshExp:   refreshexp,
+		UserRole:     user.UserType,
 	}
 
 	h.sendOkResponse(w, respwithtoken)

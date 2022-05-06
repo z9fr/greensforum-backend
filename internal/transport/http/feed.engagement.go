@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	_ "github.com/z9fr/greensforum-backend/internal/question"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
@@ -12,7 +13,8 @@ import (
 // @in header
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} question.Quesion
+// @Success 200 {array}     question.Question
+
 // @Router /user/feed [GET]
 // @Tags Feed
 func (h *Handler) GetEngagementFeed(w http.ResponseWriter, r *http.Request) {

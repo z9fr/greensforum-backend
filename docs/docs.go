@@ -90,6 +90,183 @@ const docTemplate = `{
                 }
             }
         },
+        "/collectives/{collective}": {
+            "get": {
+                "description": "get infromation about a collecting using slug",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collectives"
+                ],
+                "summary": "get collective by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "collective slug",
+                        "name": "collective",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collective.Collective"
+                        }
+                    }
+                }
+            }
+        },
+        "/collectives/{collective}/post/write": {
+            "post": {
+                "description": "create a post in collective",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collectives"
+                ],
+                "summary": "write a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "collective slug",
+                        "name": "collective",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collective.Post"
+                        }
+                    }
+                }
+            }
+        },
+        "/collectives/{collective}/unaproved": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "list all unaproved posts in a collective",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collectives"
+                ],
+                "summary": "view unaproved posts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "collective slug",
+                        "name": "collective",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collective.Post"
+                        }
+                    }
+                }
+            }
+        },
+        "/collectives/{collective}/{post}/approve": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "approve post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collectives"
+                ],
+                "summary": "approve post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "collective slug",
+                        "name": "collective",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "post slug",
+                        "name": "post",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collective.Post"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/{post}": {
+            "get": {
+                "description": "view post details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collectives"
+                ],
+                "summary": "view post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "post slug",
+                        "name": "post",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/collective.Post"
+                        }
+                    }
+                }
+            }
+        },
         "/question/create": {
             "post": {
                 "security": [
@@ -220,6 +397,14 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/feed": {
+            "get": {
+                "tags": [
+                    "Feed"
+                ],
+                "responses": {}
+            }
+        },
         "/user/join": {
             "post": {
                 "description": "register a new user",
@@ -283,6 +468,71 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/types.AuthRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/nofications": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get nofications for the current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get notifications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/user.Nofication"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/refresh": {
+            "post": {
+                "description": "refresh users token based on a given refresh token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Refresh Tokens",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.RefreshReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.RefreshResponse"
                         }
                     }
                 }
@@ -437,6 +687,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "post": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/collective.Post"
+                    }
+                },
                 "slug": {
                     "type": "string"
                 },
@@ -451,6 +707,104 @@ const docTemplate = `{
                 },
                 "website": {
                     "type": "string"
+                }
+            }
+        },
+        "collective.Comments": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_user": {
+                    "type": "integer"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "collective.Post": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/collective.Comments"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_user": {
+                    "type": "integer"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "down_vote_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_accepted": {
+                    "type": "boolean"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "up_vote_count": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.RefreshReq": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.RefreshResponse": {
+            "type": "object",
+            "properties": {
+                "auth": {
+                    "type": "string"
+                },
+                "auth_expire": {
+                    "type": "integer"
+                },
+                "refresh": {
+                    "type": "string"
+                },
+                "refresh_expire": {
+                    "type": "integer"
+                },
+                "user_type": {
+                    "type": "integer"
                 }
             }
         },
@@ -757,6 +1111,29 @@ const docTemplate = `{
                 }
             }
         },
+        "user.Nofication": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "read": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "user.User": {
             "type": "object",
             "properties": {
@@ -767,6 +1144,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "interests": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.TopWord"
+                    }
+                },
+                "tokenversion": {
                     "type": "integer"
                 },
                 "user_type": {

@@ -22,11 +22,11 @@ type Collective struct {
 	Github      string         `gorm:"gh" json:"gh"`
 	Twitter     string         `gorm:"twitter" json:"twitter"`
 	Facebook    string         `gorm:"fb" json:"fb"`
-	Members     []user.User    `gorm:"many2many:user_collective;"`
+	Members     []user.User    `gorm:"many2many:user_collective;" `
 	Tags        pq.StringArray `gorm:"type:varchar(64)[]" json:"tags" swaggertype:"string"`
 	CreatedBy   uint           `gorm:"creted_user" json:"created_user"`
 	Admins      []user.User    `gorm:"many2many:collective_admins;"`
-	Post        []Post         `gorm:"many2many:collective_posts;"`
+	Post        []Post         `gorm:"many2many:collective_posts;" `
 }
 
 type Post struct {
@@ -38,7 +38,7 @@ type Post struct {
 	DownVoteCount int            `gorm:"column:down_vote_count default:0" json:"down_vote_count"`
 	UpVoteCount   int            `grom:"column:up_vote_count default:0" json:"up_vote_count"`
 	CreatedBy     uint           `gorm:"creted_user" json:"created_user"`
-	Tags          pq.StringArray `gorm:"type:varchar(64)[]" json:"tags" swaggertype:"array"`
+	Tags          pq.StringArray `gorm:"type:varchar(64)[]" json:"tags" swaggertype:"string"`
 	Comments      []Comments     `gorm:"many2many:post_comments;" json:"comments"`
 }
 
