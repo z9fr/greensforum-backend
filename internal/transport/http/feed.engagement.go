@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/z9fr/greensforum-backend/internal/user"
@@ -19,6 +20,13 @@ func (h *Handler) GetEngagementFeed(w http.ResponseWriter, r *http.Request) {
 	u = r.Context().Value("user").(user.User)
 	// run algorithm to get data
 	values := h.FeedService.GetUserInterestedQuestionsEngagement(u)
+
+	// just return a error if there's no posts
+	if values == nil {
+		h.sendErrorResponse(w, "unable to generate posts", errors.New("can't find posts. please upvote more posts"), http.StatusServiceUnavailable)
+		return
+	}
+
 	h.sendOkResponse(w, values)
 
 }

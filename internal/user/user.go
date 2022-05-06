@@ -20,14 +20,15 @@ User Types
 */
 
 type User struct {
-	ID          uint64
-	Username    string          `gorm:"column:username" json:"username"`
-	Email       string          `gorm:"column:email" json:"email"`
-	Password    string          `gorm:"column:password" json:"-"`
-	UserType    int             `gorm:"column:user_type" json:"user_type"`
-	UserAcc     Account         `json:"account" gorm:"foreignKey:user_id;id"`
-	Nofications []Nofication    `gorm:"many2many:user_nofication" json:"-"`
-	Interests   []types.TopWord `gorm:"many2many:user_interests" json:"interests"`
+	ID           uint64
+	Username     string          `gorm:"column:username" json:"username"`
+	Email        string          `gorm:"column:email" json:"email"`
+	Password     string          `gorm:"column:password" json:"-"`
+	UserType     int             `gorm:"column:user_type" json:"user_type"`
+	UserAcc      Account         `json:"account" gorm:"foreignKey:user_id;id"`
+	Nofications  []Nofication    `gorm:"many2many:user_nofication" json:"-"`
+	Interests    []types.TopWord `gorm:"many2many:user_interests" json:"interests"`
+	TokenVersion int             `gorm:"column:tokenversion" json:"tokenversion"`
 }
 
 type Account struct {
@@ -71,6 +72,7 @@ type UserService interface {
 	CreateUser(user User) (User, error)
 	FetchallUsers() []User
 	GetUserByEmail(email string) (User, error)
+	GetUserbyID(id uint, email string) (User, error)
 
 	// roles
 	IsAdmin(user User) bool

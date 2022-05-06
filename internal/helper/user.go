@@ -28,10 +28,11 @@ func RequestToUserWithValidations(req user.CreateUserRequest) (user.User, error)
 	}
 
 	user := user.User{
-		Username: req.Username,
-		Email:    req.Email,
-		Password: hashedPassword,
-		UserType: 0,
+		Username:     req.Username,
+		Email:        req.Email,
+		Password:     hashedPassword,
+		UserType:     0,
+		TokenVersion: 0,
 		UserAcc: user.Account{
 			DisplayName:  req.Account.DisplayName,
 			Description:  req.Account.Description,

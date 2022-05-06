@@ -21,3 +21,18 @@ func (s *Service) GetUserByEmail(email string) (User, error) {
 
 	return user, nil
 }
+
+func (s *Service) GetUserbyID(id uint, email string) (User, error) {
+	var user User
+
+	if !s.IsEmailExists(email) {
+		return User{}, fmt.Errorf("No user with that email")
+	}
+
+	// do not preload noficiations
+	if result := s.DB.Debug().Preload("UserAcc").First(&user, "id = ?", id); result.Error != nil {
+		return User{}, result.Error
+	}
+
+	return user, nil
+}
