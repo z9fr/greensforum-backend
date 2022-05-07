@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/z9fr/greensforum-backend/internal/types"
@@ -32,9 +33,19 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := h.UserService.GetUserByEmail(loginreq.Email)
+	isvalid := utils.CheckPasswordHash(loginreq.Password, user.Password)
+
+	if !isvalid {
+		LogWarningsWithRequestInfo(r, err)
+		h.sendErrorResponse(w, "Invalid Username or password", errors.New("Invalid Username or Password"), 401)
+		return
+	}
+
+	// check password lmao
+
 	if err != nil {
 		LogWarningsWithRequestInfo(r, err)
-		h.sendErrorResponse(w, "Unable to find user with that email", err, 500)
+		h.sendErrorResponse(w, "Invalid Username or password", err, 401)
 		return
 	}
 

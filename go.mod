@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/cors v1.2.1
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/lib/pq v1.10.2
 	github.com/mitchellh/mapstructure v1.5.0
@@ -11,7 +12,6 @@ require (
 	github.com/swaggo/http-swagger v1.2.7
 	github.com/swaggo/swag v1.8.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/exp v0.0.0-20220428152302-39d4317da171
 	gorm.io/driver/postgres v1.3.5
 	gorm.io/gorm v1.23.5
 )
