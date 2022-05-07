@@ -9,6 +9,7 @@ func GenerateSlug(title string) string {
 	title = FirstN(title, 80)
 	title = strings.ToLower(title)
 	title = strings.ReplaceAll(title, " ", "-")
+	title = strings.ReplaceAll(title, ",", "-")
 
 	return title
 }
