@@ -41,3 +41,29 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	h.sendOkResponse(w, createdUser)
 	return
 }
+
+func (h *Handler) CreateAdminUser(w http.ResponseWriter, r *http.Request) {
+	var user user.CreateUserRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		LogWarningsWithRequestInfo(r, err)
+		h.sendErrorResponse(w, "unable to decode json body", err, 500)
+		return
+	}
+
+	u, validationerror := helper.RequestToUserWithValidations(user)
+	if validationerror != nil {
+		LogWarningsWithRequestInfo(r, validationerror)
+		h.sendErrorResponse(w, "Validation Error Occured", validationerror, 500)
+		return
+	}
+	createdUser, err := h.UserService.CreateAdminUser(u)
+	if err != nil {
+		LogWarningsWithRequestInfo(r, err)
+		h.sendErrorResponse(w, "Unable to create a user please try again", err, 500)
+		return
+	}
+
+	h.sendOkResponse(w, createdUser)
+	return
+}
