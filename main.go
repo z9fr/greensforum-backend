@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/z9fr/greensforum-backend/cmd/server"
 	_ "github.com/z9fr/greensforum-backend/docs"
 )
@@ -25,6 +26,7 @@ import (
 //@name Authorization
 
 func main() {
+	godotenv.Load(".env")
 	// start and run the server
 	server.Start()
 	//algorithm.Start()

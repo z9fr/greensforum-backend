@@ -22,3 +22,10 @@ func (s *Service) GetQuestionsPaginate(pageID int) PaginatedQuestions {
 
 	return response
 }
+
+func (s *Service) GetQuestionBasedonSlug(slug string) Question {
+	var question Question
+	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Preload("Related").Where("slug = ?", slug).Find(&question)
+
+	return question
+}
