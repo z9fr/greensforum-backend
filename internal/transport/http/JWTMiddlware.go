@@ -23,6 +23,7 @@ func (h *Handler) JWTMiddlewhare(next http.Handler) http.Handler {
 
 		authToken := strings.Split(authheader[0], " ")[1]
 		decodedUser, err := utils.VerifyToken(authToken)
+
 		user, err := h.UserService.GetUserByEmail(decodedUser.Email)
 
 		if err != nil {

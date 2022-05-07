@@ -40,3 +40,10 @@ func (h *Handler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	results := h.QuestionService.SearchPosts(q)
 	h.sendOkResponse(w, results)
 }
+
+func (h *Handler) GetQuestionBasedonSlug(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	question := h.QuestionService.GetQuestionBasedonSlug(slug)
+
+	h.sendOkResponse(w, question)
+}
