@@ -68,6 +68,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_SECRET }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
+            echo "do a git pull"
+            cd /home/${{ secrets.VPS_SSH_USERNAME }}/applications/greensforum-backend ; git pull
             echo "Pull new image"
             sudo docker-compose -f /home/${{ secrets.VPS_SSH_USERNAME }}/applications/greensforum-backend/docker-compose.yml pull
             echo "Restart the container"
