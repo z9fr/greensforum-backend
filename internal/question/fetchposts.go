@@ -3,7 +3,7 @@ package question
 // fetch all posts avaible
 func (s *Service) GetAllQuestions() []*Question {
 	var questions []*Question
-	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Preload("Related").Find(&questions)
+	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Order("created_at DESC").Preload("Related").Find(&questions)
 	return questions
 }
 
@@ -25,7 +25,7 @@ func (s *Service) GetQuestionsPaginate(pageID int) PaginatedQuestions {
 
 func (s *Service) GetQuestionBasedonSlug(slug string) Question {
 	var question Question
-	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Preload("Related").Where("slug = ?", slug).Find(&question)
+	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Order("created_at DESC").Preload("Related").Where("slug = ?", slug).Find(&question)
 
 	return question
 }
