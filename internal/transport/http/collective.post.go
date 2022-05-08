@@ -165,3 +165,11 @@ func (h *Handler) GetPostbySlug(w http.ResponseWriter, r *http.Request) {
 
 	h.sendOkResponse(w, post)
 }
+
+func (h *Handler) GetmyTobeApprovePosts(w http.ResponseWriter, r *http.Request) {
+
+	var u user.User
+	u = r.Context().Value("user").(user.User)
+	posts := h.CollectiveService.GetMyUnaprovedPosts(uint(u.ID))
+	h.sendOkResponse(w, posts)
+}
