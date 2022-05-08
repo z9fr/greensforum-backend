@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/z9fr/greensforum-backend/internal/collective"
+	"github.com/z9fr/greensforum-backend/internal/question"
 )
 
 // @TODO - support pagination
@@ -40,6 +42,15 @@ func (h *Handler) GetCollectiveBySlug(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c := h.CollectiveService.GetCollectiveBySlug(collective_slug)
-	h.sendOkResponse(w, c)
+	questions := h.QuestionService.SearchQuestionsByTagsv2PGStringArray(c.Tags)
+
+	//questions := h.QuestionService.GetQuestionsBasedonTags(c.Tags)
+	h.sendOkResponse(w, struct {
+		*collective.Collective
+		Questions []*question.Question `json:"questions"`
+	}{
+		Collective: c,
+		Questions:  questions,
+	})
 
 }

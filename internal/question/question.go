@@ -89,6 +89,9 @@ type QuestionService interface {
 	// vote
 	UpVotePost(user *user.User, question *Question)
 	isUpvoted(user *user.User, question *Question) bool
+
+	//fetch
+	GetQuestionsBasedonTags(vals []string) []Question
 }
 
 // NewService - create a instance of this service and return

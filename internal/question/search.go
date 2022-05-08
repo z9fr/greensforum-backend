@@ -1,5 +1,7 @@
 package question
 
+import "github.com/lib/pq"
+
 func (s *Service) GetQuestionByID(id uint) Question {
 	var question Question
 	s.DB.Debug().Preload("Tags").Preload("Answers").Preload("UpvotedUsers").Preload("Related").Where("id = ?", id).Find(&question)
@@ -63,6 +65,25 @@ func (s *Service) SearchQuestionsByTagsv2(tag string) []*Question {
 		var tags []Tag
 		s.DB.Debug().Raw("select * from tags where id IN (select tag_id from question_tags where question_id = ?)", question.ID).Scan(&tags)
 		question.Tags = tags
+	}
+
+	if len(questions) == 0 {
+		return []*Question{}
+	}
+
+	return questions
+}
+
+func (s *Service) SearchQuestionsByTagsv2PGStringArray(tags pq.StringArray) []*Question {
+	var questions []*Question
+
+	for _, tag := range tags {
+		s.DB.Debug().Raw("select * from questions where id in (select question_id from question_tags where tag_id in (select id from tags where name= ?))", tag).Scan(&questions)
+		for _, question := range questions {
+			var tags []Tag
+			s.DB.Debug().Raw("select * from tags where id IN (select tag_id from question_tags where question_id = ?)", question.ID).Scan(&tags)
+			question.Tags = tags
+		}
 	}
 
 	if len(questions) == 0 {
