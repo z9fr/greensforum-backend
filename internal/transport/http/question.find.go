@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/z9fr/greensforum-backend/internal/collective"
+	"github.com/z9fr/greensforum-backend/internal/question"
 )
 
 // @Summary get posts by tags
@@ -19,7 +21,16 @@ func (h *Handler) FindPostsByTag(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 	//questions := h.QuestionService.SearchQuestionsByTags(tag)
 	questions := h.QuestionService.SearchQuestionsByTagsv2(tag)
-	h.sendOkResponse(w, questions)
+	posts := h.CollectiveService.GetPostsByTags([]string{tag})
+
+	//	h.sendOkResponse(w, )
+	h.sendOkResponse(w, struct {
+		Questions []*question.Question
+		Posts     []collective.Post `json:"posts"`
+	}{
+		questions,
+		posts,
+	})
 }
 
 // @Summary search for posts

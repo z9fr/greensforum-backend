@@ -3,6 +3,7 @@ package collective
 import (
 	"errors"
 
+	"github.com/lib/pq"
 	"github.com/z9fr/greensforum-backend/internal/user"
 )
 
@@ -49,4 +50,11 @@ func (s *Service) GetPostBySlug(slug string) Post {
 	var post Post
 	s.DB.Debug().Preload("Comments").Find(&post).Where("slug = ?", slug)
 	return post
+}
+
+// return posts related to a tag
+func (s *Service) GetPostsByTags(tags []string) []Post {
+	var posts []Post
+	s.DB.Debug().Where("tags && ? ", pq.Array(tags)).Find(&posts)
+	return posts
 }
