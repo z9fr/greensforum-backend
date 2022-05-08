@@ -96,6 +96,7 @@ func (h *Handler) SetupRotues() {
 			r.Route("/me", func(r chi.Router) {
 				r.Use(h.JWTMiddlewhare)
 				r.Get("/", h.LoggedinUser)
+				r.Get("/unaproved/posts", h.GetmyTobeApprovePosts)
 			})
 
 		})

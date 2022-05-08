@@ -48,7 +48,7 @@ func (s *Service) ApprovePosts(post_slug string, collective_slug string, u user.
 // fetch post by using slug
 func (s *Service) GetPostBySlug(slug string) Post {
 	var post Post
-	s.DB.Debug().Preload("Comments").Find(&post).Where("slug = ?", slug)
+	s.DB.Debug().Preload("Comments").Where("slug = ?", slug).Find(&post)
 	return post
 }
 
@@ -57,4 +57,11 @@ func (s *Service) GetPostsByTags(tags []string) []Post {
 	var posts []Post
 	s.DB.Debug().Where("tags && ? ", pq.Array(tags)).Find(&posts)
 	return posts
+}
+
+func (s *Service) GetMyUnaprovedPosts(id uint) []Post {
+	var results []Post
+	s.DB.Debug().Raw("select * from posts where is_accepted IS NOT TRUE and created_by= ?", id).Scan(&results)
+
+	return results
 }
