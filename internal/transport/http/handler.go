@@ -80,6 +80,7 @@ func (h *Handler) SetupRotues() {
 			r.Post("/login", h.Login)
 			r.Get("/all", h.GetAllUsers)
 			r.Post("/refresh", h.RefreshToken)
+			r.Post("/admin/create", h.CreateUser)
 
 			r.Route("/nofications", func(r chi.Router) {
 				r.Use(h.JWTMiddlewhare)

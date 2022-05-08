@@ -29,3 +29,18 @@ func (s *Service) GetQuestionBasedonSlug(slug string) Question {
 
 	return question
 }
+
+func (s *Service) GetQuestionsBasedonTags(vals []string) []Question {
+	var questions []Question
+	s.DB.Debug().
+		Raw("select * from questions where id in (select DISTINCT question_id from question_related where top_word_id in (select id from top_words where word in (?)))", vals).
+		Scan(&questions)
+
+	for _, q := range questions {
+		var tags []Tag
+		s.DB.Debug().Raw("select * from tags where id IN (select tag_id from question_tags where question_id = ?)", q.ID).Scan(&tags)
+		q.Tags = tags
+	}
+
+	return questions
+}
