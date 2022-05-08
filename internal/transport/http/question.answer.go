@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -53,6 +54,17 @@ func (h *Handler) WriteAnswer(w http.ResponseWriter, r *http.Request) {
 		h.sendErrorResponse(w, "Unable to Create a Post", err, 500)
 		return
 	}
+	u64, err := strconv.ParseUint(question_id, 10, 32)
+	ogquestion := h.QuestionService.GetQuestionByID(uint(u64))
+	question_ownser, err := h.UserService.GetUserbyOnlyID(uint(ogquestion.CreatedBy))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var notifiaction user.Nofication
+	notifiaction.Message = "New answer has been posted to your question. view <a href=/q/" + question_id + "/> here </a>"
+	h.UserService.SendNofications(question_ownser, notifiaction)
 
 	h.sendOkResponse(w, q)
 }
