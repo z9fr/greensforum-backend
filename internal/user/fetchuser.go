@@ -36,3 +36,14 @@ func (s *Service) GetUserbyID(id uint, email string) (User, error) {
 
 	return user, nil
 }
+
+func (s *Service) GetUserbyOnlyID(id uint) (User, error) {
+	var user User
+
+	// do not preload noficiations
+	if result := s.DB.Debug().Preload("UserAcc").Preload("Nofications").First(&user, "id = ?", id); result.Error != nil {
+		return User{}, result.Error
+	}
+
+	return user, nil
+}
