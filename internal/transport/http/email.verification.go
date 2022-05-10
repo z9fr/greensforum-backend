@@ -55,7 +55,8 @@ func (h *Handler) RequestVerification(w http.ResponseWriter, r *http.Request) {
 	err, token, secret := h.VerificationServie.GenerateVerification(u)
 
 	if err != nil {
-		h.sendErrorResponse(w, "Unable to generate the secret", err, 500)
+		h.sendErrorResponse(w, "Unable to generate the secret", err, 400)
+		return
 	}
 
 	// SendEmailWithToken
