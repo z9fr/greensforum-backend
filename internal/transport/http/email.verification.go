@@ -23,9 +23,26 @@ func (h *Handler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokeninfo := h.VerificationServie.GetTokenInfo(token)
+	user, err := h.UserService.GetUserbyOnlyID(uint(tokeninfo.UserId))
+
+	if err != nil {
+		h.sendErrorResponse(w, "Unable to find user for that token", err, 401)
+		return
+	}
+
+	err, success := h.VerificationServie.RequestVerification(user, tokeninfo, string(secret))
+
+	if err != nil {
+		h.sendErrorResponse(w, "Unable to complete email verification", err, 500)
+		return
+	}
 
 	fmt.Println(token, string(secret))
-	h.sendOkResponse(w, tokeninfo)
+	h.sendOkResponse(w, struct {
+		Success bool `json:"success"`
+	}{
+		Success: success,
+	})
 
 }
 

@@ -2,6 +2,7 @@ package verification
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/z9fr/greensforum-backend/internal/types"
@@ -28,17 +29,25 @@ func NewService(db *gorm.DB) *Service {
 	}
 }
 
-func (s *Service) RequestVerification(user user.User, token string) (error, bool) {
-	vinfo := s.GetTokenInfo(token)
+func (s *Service) RequestVerification(user user.User, token EmailVerification, hash string) (error, bool) {
 
-	if len(vinfo.Secret) > 0 {
+	if !token.IsValid {
+		return errors.New("Invalid token"), false
+	}
+
+	valid := utils.ValidateHash(token.Token+token.Secret, hash)
+	fmt.Println(valid, token.Secret, token.Token, hash)
+
+	if !valid {
 		return errors.New("Invalid token"), false
 	}
 
 	// validate the user and kill the token
 	user.IsVerified = true
-	vinfo.IsValid = false
-	// save them on db later
+	token.IsValid = false
+
+	s.DB.Debug().Save(&user)
+	s.DB.Debug().Save(&token)
 	return nil, true
 }
 
