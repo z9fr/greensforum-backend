@@ -10,6 +10,7 @@ import (
 	"github.com/z9fr/greensforum-backend/internal/question"
 	topwords "github.com/z9fr/greensforum-backend/internal/top-words"
 	"github.com/z9fr/greensforum-backend/internal/user"
+	"github.com/z9fr/greensforum-backend/internal/verification"
 
 	transportHttp "github.com/z9fr/greensforum-backend/internal/transport/http"
 )
@@ -41,9 +42,10 @@ func (app *App) Run() error {
 	topwordsService := topwords.InitTopTenWordsService()
 	collectiveService := collective.NewService(db)
 	feedservice := feed.NewService(db)
+	verificationService := verification.NewService(db)
 
 	handler := transportHttp.NewHandler(userService, questionservice,
-		topwordsService, collectiveService, feedservice)
+		topwordsService, collectiveService, feedservice, verificationService)
 	handler.SetupRotues()
 
 	if err := http.ListenAndServe(":4000", handler.Router); err != nil {

@@ -29,6 +29,7 @@ type User struct {
 	Nofications  []Nofication    `gorm:"many2many:user_nofication" json:"-"`
 	Interests    []types.TopWord `gorm:"many2many:user_interests" json:"interests"`
 	TokenVersion int             `gorm:"column:tokenversion" json:"tokenversion"`
+	IsVerified   bool            `gorm:"column:verified" json:"verified"`
 }
 
 type Account struct {

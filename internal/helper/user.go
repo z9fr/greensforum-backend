@@ -33,6 +33,7 @@ func RequestToUserWithValidations(req user.CreateUserRequest) (user.User, error)
 		Password:     hashedPassword,
 		UserType:     0,
 		TokenVersion: 0,
+		IsVerified:   false,
 		UserAcc: user.Account{
 			DisplayName:  req.Account.DisplayName,
 			Description:  req.Account.Description,
