@@ -12,18 +12,20 @@ import (
 	"github.com/z9fr/greensforum-backend/internal/question"
 	topwords "github.com/z9fr/greensforum-backend/internal/top-words"
 	"github.com/z9fr/greensforum-backend/internal/user"
+	"github.com/z9fr/greensforum-backend/internal/verification"
 
 	"github.com/go-chi/cors"
 )
 
 type Handler struct {
 	// service and router
-	Router            *chi.Mux
-	UserService       *user.Service
-	QuestionService   *question.Service
-	TopWordsService   topwords.ITopTenWords
-	CollectiveService *collective.Service
-	FeedService       *feed.Service
+	Router             *chi.Mux
+	UserService        *user.Service
+	QuestionService    *question.Service
+	TopWordsService    topwords.ITopTenWords
+	CollectiveService  *collective.Service
+	FeedService        *feed.Service
+	VerificationServie *verification.Service
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
@@ -32,13 +34,15 @@ func NewHandler(userService *user.Service,
 	topwordsservice topwords.ITopTenWords,
 	collectiveService *collective.Service,
 	feedservice *feed.Service,
+	verificationService *verification.Service,
 ) *Handler {
 	return &Handler{
-		UserService:       userService,
-		QuestionService:   questionService,
-		TopWordsService:   topwordsservice,
-		CollectiveService: collectiveService,
-		FeedService:       feedservice,
+		UserService:        userService,
+		QuestionService:    questionService,
+		TopWordsService:    topwordsservice,
+		CollectiveService:  collectiveService,
+		FeedService:        feedservice,
+		VerificationServie: verificationService,
 	}
 }
 
@@ -81,11 +85,17 @@ func (h *Handler) SetupRotues() {
 			r.Get("/all", h.GetAllUsers)
 			r.Post("/refresh", h.RefreshToken)
 			r.Post("/admin/create", h.CreateUser)
+			r.Get("/confirm", h.VerifyEmail)
 
 			r.Route("/nofications", func(r chi.Router) {
 				r.Use(h.JWTMiddlewhare)
 				r.Get("/", h.GetNofications)
 
+			})
+
+			r.Route("/verify", func(r chi.Router) {
+				r.Use(h.JWTMiddlewhare)
+				r.Get("/request", h.RequestVerification)
 			})
 
 			r.Route("/feed", func(r chi.Router) {
