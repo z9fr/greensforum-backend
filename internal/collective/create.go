@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/z9fr/greensforum-backend/internal/user"
 	"github.com/z9fr/greensforum-backend/internal/utils"
 )
 
@@ -42,4 +43,11 @@ func (s *Service) IsUniqueSlug(slug string) bool {
 	}
 
 	return exists
+}
+
+func (s *Service) JoinMembertoConnective(user user.User, slug string) bool {
+	collective := s.GetCollectiveBySlug(slug)
+	collective.Members = append(collective.Members, user)
+	s.DB.Debug().Save(&collective)
+	return true
 }
