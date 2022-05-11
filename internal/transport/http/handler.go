@@ -110,6 +110,7 @@ func (h *Handler) SetupRotues() {
 				r.Get("/unaproved/posts", h.GetmyTobeApprovePosts)
 			})
 
+			r.Get("/info/{id}", h.GetUserByID)
 		})
 
 		r.Route("/view", func(r chi.Router) {
