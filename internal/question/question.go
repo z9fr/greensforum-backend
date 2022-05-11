@@ -68,6 +68,7 @@ type AnswerRequest struct {
 type PaginatedQuestions struct {
 	Items []Question `json:"items"`
 	Next  int        `json:"next_page_id"`
+	Count int64      `json:"total"`
 }
 
 // QuestionService - interface for Question Service
