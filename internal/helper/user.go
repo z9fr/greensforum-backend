@@ -13,7 +13,7 @@ import (
 func RequestToUserWithValidations(req user.CreateUserRequest) (user.User, error) {
 
 	if req.Username == "" || req.Email == "" || req.Password == "" || req.Account.Name == "" {
-		return user.User{}, fmt.Errorf("Missing Fields")
+		return user.User{}, fmt.Errorf("Missing Fields user")
 	}
 
 	if !utils.IsEmailValid(req.Email) {
