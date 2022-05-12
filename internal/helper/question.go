@@ -11,7 +11,7 @@ import (
 func RequestPostWithValidation(questionreq question.QuestionCreateRequest, user user.User) (question.Question, error) {
 
 	if questionreq.Title == "" || questionreq.Body == "" {
-		return question.Question{}, fmt.Errorf("Missing Fields")
+		return question.Question{}, fmt.Errorf("Missing Fields question")
 	}
 
 	return question.Question{
