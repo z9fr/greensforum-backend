@@ -4,7 +4,7 @@ import "github.com/z9fr/greensforum-backend/internal/utils"
 
 func (s *Service) GetAllEvents() []Event {
 	var events []Event
-	s.DB.Debug().Order("created_at DESC").Find(events)
+	s.DB.Debug().Order("created_at DESC").Find(&events)
 	return events
 }
 
