@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/z9fr/greensforum-backend/internal/collective"
+	"github.com/z9fr/greensforum-backend/internal/events"
 	"github.com/z9fr/greensforum-backend/internal/feed"
 	"github.com/z9fr/greensforum-backend/internal/question"
 	topwords "github.com/z9fr/greensforum-backend/internal/top-words"
@@ -26,6 +27,7 @@ type Handler struct {
 	CollectiveService  *collective.Service
 	FeedService        *feed.Service
 	VerificationServie *verification.Service
+	EventServie        *events.Service
 }
 
 // NewHandler -  construcutre to create and return a pointer to a handler
@@ -35,6 +37,7 @@ func NewHandler(userService *user.Service,
 	collectiveService *collective.Service,
 	feedservice *feed.Service,
 	verificationService *verification.Service,
+	eventservice *events.Service,
 ) *Handler {
 	return &Handler{
 		UserService:        userService,
@@ -43,6 +46,7 @@ func NewHandler(userService *user.Service,
 		CollectiveService:  collectiveService,
 		FeedService:        feedservice,
 		VerificationServie: verificationService,
+		EventServie:        eventservice,
 	}
 }
 
@@ -162,6 +166,15 @@ func (h *Handler) SetupRotues() {
 
 		r.Route("/post/", func(r chi.Router) {
 			r.Get("/{post}", h.GetPostbySlug)
+		})
+
+		r.Route("/event", func(r chi.Router) {
+			r.Route("/create", func(r chi.Router) {
+				r.Use(h.JWTMiddlewhare)
+				r.Post("/", h.CreateNewEvent)
+			})
+			r.Get("/all", h.ViewallEvents)
+			r.Get("/{event}", h.GeteventsBySlug)
 		})
 
 		r.Route("/", func(r chi.Router) {
