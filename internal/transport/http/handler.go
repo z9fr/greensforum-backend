@@ -214,4 +214,5 @@ func (h *Handler) TestRoute(w http.ResponseWriter, r *http.Request) {
 	u = r.Context().Value("user").(user.User)
 	h.sendOkResponse(w, u.Email)
 	return
+
 }
