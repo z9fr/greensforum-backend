@@ -41,7 +41,7 @@ postgres=# explain analyze select * from events order by id desc limit 10;
 
 betchmark results
 
-         ```
+```
 $ go test --bench=. --benchmem  -v .
 goos: darwin
 goarch: amd64
@@ -49,11 +49,11 @@ pkg: github.com/bxcodec/go-postgres-pagination-example/pagenumber
 BenchmarkFetchQuery
 BenchmarkFetchQuery-4   	   10000	   8731975 ns/op	    9201 B/op	     221 allocs/op
 PASS
-         ```
+```
 
 ### Pagination with Offset and Limit
 
-         ```
+```
 $ go test --bench=. --benchmem  -v .
 goos: darwin
 goarch: amd64
@@ -62,11 +62,11 @@ BenchmarkFetchQuery
 BenchmarkFetchQuery-4   	   10000	   9663250 ns/op	    9202 B/op	     221 allocs/op
 PASS
 ok  	github.com/bxcodec/go-postgres-pagination-example/offsetlimit	96.744s
-         ```
+```
 
 ### Pagination with Auto Incremental PK of the ID
 
-         ```
+```
 $ go test --bench=. --benchmem  -v .
 goos: darwin
 goarch: amd64
@@ -75,14 +75,12 @@ BenchmarkFetchQuery
 BenchmarkFetchQuery-4   	   10000	   2220470 ns/op	   10099 B/op	     226 allocs/op
 PASS
 ok  	github.com/bxcodec/go-postgres-pagination-example/autoincrementid	22.303s
-
-         ```
+```
 
 ### Pagination with UUID Combined with Created Timestamp
 
 
-         ```
-
+```
 $ go test --bench=. --benchmem  -v .
 goos: darwin
 goarch: amd64
@@ -90,7 +88,7 @@ pkg: github.com/bxcodec/go-postgres-pagination-example/uuidcreatedtime
 BenchmarkFetchQuery
 BenchmarkFetchQuery-4   	   10000	   4354580 ns/op	   12868 B/op	     264 allocs/op
 PASS
-         ```
+```
 ---
 
 final results
