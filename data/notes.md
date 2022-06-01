@@ -34,3 +34,67 @@ postgres=# explain analyze select * from events order by id desc limit 10;
    ->  Index Scan Backward using events_pkey on events  (cost=0.14..51.00 rows=190 width=401) 
  Planning Time: 0.145 ms
  Execution Time: 0.087 ms
+```
+ ---
+
+## Pagination with Page Number
+
+betchmark results
+
+         ```
+$ go test --bench=. --benchmem  -v .
+goos: darwin
+goarch: amd64
+pkg: github.com/bxcodec/go-postgres-pagination-example/pagenumber
+BenchmarkFetchQuery
+BenchmarkFetchQuery-4   	   10000	   8731975 ns/op	    9201 B/op	     221 allocs/op
+PASS
+         ```
+
+### Pagination with Offset and Limit
+
+         ```
+$ go test --bench=. --benchmem  -v .
+goos: darwin
+goarch: amd64
+pkg: github.com/bxcodec/go-postgres-pagination-example/offsetlimit
+BenchmarkFetchQuery
+BenchmarkFetchQuery-4   	   10000	   9663250 ns/op	    9202 B/op	     221 allocs/op
+PASS
+ok  	github.com/bxcodec/go-postgres-pagination-example/offsetlimit	96.744s
+         ```
+
+### Pagination with Auto Incremental PK of the ID
+
+         ```
+$ go test --bench=. --benchmem  -v .
+goos: darwin
+goarch: amd64
+pkg: github.com/bxcodec/go-postgres-pagination-example/autoincrementid
+BenchmarkFetchQuery
+BenchmarkFetchQuery-4   	   10000	   2220470 ns/op	   10099 B/op	     226 allocs/op
+PASS
+ok  	github.com/bxcodec/go-postgres-pagination-example/autoincrementid	22.303s
+
+         ```
+
+### Pagination with UUID Combined with Created Timestamp
+
+
+         ```
+
+$ go test --bench=. --benchmem  -v .
+goos: darwin
+goarch: amd64
+pkg: github.com/bxcodec/go-postgres-pagination-example/uuidcreatedtime
+BenchmarkFetchQuery
+BenchmarkFetchQuery-4   	   10000	   4354580 ns/op	   12868 B/op	     264 allocs/op
+PASS
+         ```
+---
+
+final results
+
+![alt text](bentchmarkresults.png)
+
+more information from [here](https://medium.com/easyread/how-to-do-pagination-in-postgres-with-golang-in-4-common-ways-12365b9fb528)
